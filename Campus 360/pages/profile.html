@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Campus 360 User Profile & Role Preferences" />
+  <title>User Profile | Campus 360</title>
+  
+  <link rel="stylesheet" href="../css/dark-theme.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body data-page="profile">
+
+  <main class="container" style="padding-top: 24px; padding-bottom: 64px;">
+    
+    <div class="page-header-wrap">
+      <div class="page-header-flex">
+        <div>
+          <span class="badge badge-cyan" style="margin-bottom: 8px;">Identity & Access Management</span>
+          <h1 class="page-title">User Account Profile</h1>
+          <p class="page-subtitle">Manage role credentials, active event passes, and account preferences.</p>
+        </div>
+        <div>
+          <a href="../login.html" class="btn btn-secondary btn-sm">
+            <i data-lucide="log-out" style="width: 14px; height: 14px;"></i>
+            <span>Log In with Another Account</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 28px;" id="profile-container-grid">
+      
+      <!-- Profile Card -->
+      <div class="feature-card" style="padding: 28px; text-align: center;">
+        <div id="profile-avatar-display" class="user-avatar" style="width: 72px; height: 72px; font-size: 1.8rem; margin: 0 auto 16px;">
+          AT
+        </div>
+        <h2 id="profile-name-display" style="font-size: 1.35rem; margin-bottom: 4px;">Alex Turner</h2>
+        <p id="profile-email-display" style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 14px;">student@campus360.edu</p>
+
+        <div id="profile-role-badge" class="badge badge-cyan" style="margin-bottom: 24px;">
+          🎓 Enrolled Student
+        </div>
+
+        <div style="text-align: left; background: var(--bg-deep); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 24px; font-size: 0.84rem; line-height: 1.8;">
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-muted);">Identifier / ID:</span>
+            <strong id="profile-id-display" style="font-family: var(--font-mono); color: var(--text-primary);">STU-2024-8842</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-muted);">Department:</span>
+            <span id="profile-dept-display" style="color: var(--text-secondary);">Computer Engineering</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-muted);">Academic Standing:</span>
+            <strong id="profile-cgpa-display" style="color: var(--cyan-primary);">8.85 CGPA</strong>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="profile-switch-role-btn" style="width: 100%;">
+          Switch Role
+        </button>
+      </div>
+
+      <!-- Passes & Activity -->
+      <div style="display: flex; flex-direction: column; gap: 24px;">
+        
+        <!-- Active Passes -->
+        <div class="feature-card" style="padding: 24px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <i data-lucide="ticket" style="width: 20px; height: 20px; color: var(--cyan-primary);"></i>
+              <h3 style="font-size: 1.15rem;">Registered Event Passes</h3>
+            </div>
+            <a href="campus-life.html" class="link-btn" style="font-size: 0.8rem; color: var(--cyan-primary);">Browse Events →</a>
+          </div>
+
+          <div id="user-passes-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        </div>
+
+        <!-- System Reset Panel -->
+        <div class="feature-card" style="padding: 24px;">
+          <h3 style="font-size: 1.15rem; margin-bottom: 8px;">Demo Environment Reset</h3>
+          <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 16px;">
+            Want to restart the demo from a clean slate? This resets all simulated notices, events, assignments, and local database entries to factory seed data.
+          </p>
+          <button type="button" class="btn btn-secondary btn-sm" id="reset-all-demo-data">
+            <i data-lucide="rotate-ccw" style="width: 14px; height: 14px;"></i>
+            Reset Campus 360 Demo Data
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="../js/db.js"></script>
+  <script src="../js/page-shell.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      renderProfile();
+
+      const resetBtn = document.getElementById('reset-all-demo-data');
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          if (confirm('Reset Campus 360 database to default seed state?')) {
+            window.CampusDB.resetDatabase();
+            window.showToast('Demo data reset to clean factory state', 'success');
+            setTimeout(() => window.location.reload(), 400);
+          }
+        });
+      }
+
+      const switchBtn = document.getElementById('profile-switch-role-btn');
+      if (switchBtn) {
+        switchBtn.addEventListener('click', () => {
+          const user = window.CampusDB.getCurrentUser();
+          if (user && user.role === 'admin') {
+            window.CampusDB.loginAs('student');
+          } else {
+            window.CampusDB.loginAs('admin');
+          }
+          window.location.reload();
+        });
+      }
+    });
+
+    function renderProfile() {
+      const user = window.CampusDB.getCurrentUser();
+      const isAdmin = window.CampusDB.isAdmin();
+
+      if (user) {
+        document.getElementById('profile-name-display').textContent = user.name;
+        document.getElementById('profile-email-display').textContent = user.email;
+        document.getElementById('profile-id-display').textContent = user.id;
+        document.getElementById('profile-dept-display').textContent = user.department;
+        document.getElementById('profile-avatar-display').textContent = user.avatar || 'U';
+
+        const roleBadge = document.getElementById('profile-role-badge');
+        const cgpaDisplay = document.getElementById('profile-cgpa-display');
+        const switchBtn = document.getElementById('profile-switch-role-btn');
+
+        if (isAdmin) {
+          roleBadge.className = 'badge badge-violet';
+          roleBadge.textContent = '🛡️ Institute Administrator';
+          cgpaDisplay.textContent = 'Designation: Senior Dean';
+          switchBtn.textContent = '🎓 Switch to Student Role';
+          switchBtn.className = 'btn btn-primary';
+          document.getElementById('profile-avatar-display').className = 'user-avatar admin-avatar';
+        } else {
+          roleBadge.className = 'badge badge-cyan';
+          roleBadge.textContent = '🎓 Enrolled Student';
+          cgpaDisplay.textContent = `${user.cgpa || '8.85'} CGPA`;
+          switchBtn.textContent = '🛡️ Switch to Administrator Role';
+          switchBtn.className = 'btn btn-violet';
+          document.getElementById('profile-avatar-display').className = 'user-avatar';
+        }
+      }
+
+      // Render registered passes
+      const passesContainer = document.getElementById('user-passes-list');
+      const registeredEvents = window.CampusDB.getEvents({ registeredOnly: true });
+
+      if (registeredEvents.length === 0) {
+        passesContainer.innerHTML = `
+          <div style="text-align: center; padding: 24px; color: var(--text-muted); font-size: 0.85rem;">
+            No active event passes. Claim free tickets in Campus Life!
+          </div>
+        `;
+      } else {
+        passesContainer.innerHTML = registeredEvents.map(evt => `
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: var(--bg-deep); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm);">
+            <div>
+              <strong style="color: var(--text-primary); font-size: 0.9rem; display: block;">${evt.title}</strong>
+              <span style="font-size: 0.78rem; color: var(--text-secondary);">${evt.venue} • ${evt.date}</span>
+            </div>
+            <span class="badge badge-cyan" style="font-family: var(--font-mono);">Pass Confirmed</span>
+          </div>
+        `).join('');
+      }
+
+      window.refreshLucideIcons();
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Campus 360 Student Marketplace — Peer-to-peer exchange for textbooks, scientific calculators, stationery, and engineering gear." />
+  <title>Student Marketplace | Campus 360</title>
+  
+  <link rel="stylesheet" href="../css/dark-theme.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    .marketplace-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 22px;
+    }
+
+    .market-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.25s ease;
+    }
+
+    .market-card:hover {
+      border-color: rgba(245, 158, 11, 0.35);
+      background: var(--bg-surface-elevated);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+    }
+  </style>
+</head>
+<body data-page="marketplace">
+
+  <main class="container" style="padding-top: 24px; padding-bottom: 64px;">
+    
+    <!-- Page Header -->
+    <div class="page-header-wrap">
+      <div class="page-header-flex">
+        <div>
+          <span class="badge badge-amber" style="margin-bottom: 8px;">🛍️ Peer-to-Peer College Exchange</span>
+          <h1 class="page-title">Student Marketplace</h1>
+          <p class="page-subtitle">
+            Buy, sell, and exchange pre-owned engineering textbooks, scientific calculators, lab coats, and draft tools directly on campus.
+          </p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <button type="button" class="btn btn-primary btn-sm" id="sell-item-trigger-btn">
+            <i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i>
+            <span>+ Sell an Item</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Moderation Bar (If Admin) -->
+    <div id="admin-moderation-banner-slot"></div>
+
+    <!-- Filters & Sort Bar -->
+    <div class="filter-action-bar">
+      <div class="tabs-group" id="market-category-tabs">
+        <button type="button" class="tab-btn active" data-cat="all">All Items</button>
+        <button type="button" class="tab-btn" data-cat="Textbooks">Textbooks</button>
+        <button type="button" class="tab-btn" data-cat="Electronics">Electronics</button>
+        <button type="button" class="tab-btn" data-cat="Stationery">Stationery</button>
+        <button type="button" class="tab-btn" data-cat="Lab Gear">Lab Gear</button>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+        <select class="form-control" id="market-sort-select" style="width: auto; padding: 7px 12px; font-size: 0.82rem;">
+          <option value="newest">Sort: Newest First</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+        </select>
+
+        <div class="search-input-box">
+          <i data-lucide="search" style="width: 16px; height: 16px;"></i>
+          <input type="search" id="market-search-input" placeholder="Search textbooks, calculators..." />
+        </div>
+      </div>
+    </div>
+
+    <!-- Marketplace Items Grid -->
+    <div class="marketplace-grid" id="marketplace-grid-container"></div>
+
+  </main>
+
+  <!-- Sell Item Modal -->
+  <div class="modal-backdrop-custom" id="sell-item-modal">
+    <div class="modal-container-custom" style="max-width: 580px;">
+      <div class="modal-header-custom">
+        <h3 style="font-size: 1.15rem;">Post Item on Student Marketplace</h3>
+        <button type="button" class="btn btn-secondary btn-sm" id="close-sell-modal">✕</button>
+      </div>
+      <div class="modal-body-custom">
+        <form id="sell-item-form">
+          <div class="form-group">
+            <label class="form-label">Item Title & Edition</label>
+            <input type="text" class="form-control" id="item-title" placeholder="e.g. Higher Engineering Mathematics — B.S. Grewal (44th Ed)" required />
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <select class="form-control" id="item-category">
+                <option value="Textbooks">Textbooks</option>
+                <option value="Electronics">Electronics / Calculators</option>
+                <option value="Stationery">Stationery / Aprons</option>
+                <option value="Lab Gear">Lab Gear / Mini-Drafters</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Price in ₹</label>
+              <input type="number" class="form-control" id="item-price" placeholder="350" required />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label">Item Condition</label>
+              <select class="form-control" id="item-condition">
+                <option value="Like New">Like New (Mint Condition)</option>
+                <option value="Excellent">Excellent</option>
+                <option value="Good">Good (Readable, minor notes)</option>
+                <option value="Fair">Fair</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Contact WhatsApp / Mobile</label>
+              <input type="text" class="form-control" id="item-contact" value="+91 98765 43210" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Item Description & Pickup Location</label>
+            <textarea class="form-control" id="item-desc" placeholder="Specify if any pages are marked, battery condition, or preferred meeting point (e.g. Central Library canteen)." required></textarea>
+          </div>
+
+          <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 8px; padding: 12px; font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 18px;">
+            ⚠️ <strong>Campus Exchange Policy:</strong> Only educational books, calculators, and approved lab supplies are permitted. Prohibited goods will be removed by administrators.
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" class="btn btn-secondary" id="cancel-sell-btn">Cancel</button>
+            <button type="submit" class="btn btn-primary">List Item for Sale</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact Seller Modal -->
+  <div class="modal-backdrop-custom" id="contact-seller-modal">
+    <div class="modal-container-custom" style="max-width: 480px;">
+      <div class="modal-header-custom">
+        <div>
+          <h3 style="font-size: 1.1rem;">Contact Student Seller</h3>
+          <span id="contact-modal-item-title" style="font-size: 0.8rem; color: var(--cyan-primary);">Item Name</span>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" id="close-contact-modal">✕</button>
+      </div>
+      <div class="modal-body-custom">
+        <div style="background: var(--bg-deep); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span style="color: var(--text-muted); font-size: 0.8rem;">Seller:</span>
+            <strong id="seller-modal-name" style="color: var(--text-primary); font-size: 0.85rem;">Student Name</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span style="color: var(--text-muted); font-size: 0.8rem;">Asking Price:</span>
+            <strong id="seller-modal-price" style="color: #34d399; font-family: var(--font-mono); font-size: 0.95rem;">₹350</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-muted); font-size: 0.8rem;">Contact Info:</span>
+            <span id="seller-modal-contact" style="color: var(--cyan-primary); font-family: var(--font-mono); font-size: 0.8rem;">contact info</span>
+          </div>
+        </div>
+
+        <form id="contact-inquiry-form">
+          <div class="form-group">
+            <label class="form-label">Send Direct Message to Seller</label>
+            <textarea class="form-control" id="buyer-inquiry-msg" required>Hi, I am interested in purchasing this item. Is it still available for handoff near the library?</textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">
+            <i data-lucide="send" style="width: 16px; height: 16px;"></i>
+            Send Simulated Inquiry
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../js/db.js"></script>
+  <script src="../js/page-shell.js"></script>
+
+  <script>
+    let activeCat = 'all';
+    let activeSort = 'newest';
+    let searchQuery = '';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initFilters();
+      renderModerationBanner();
+      renderMarketplace();
+
+      window.addEventListener('campus:db-change', () => {
+        renderMarketplace();
+      });
+      window.addEventListener('campus:auth-change', () => {
+        renderModerationBanner();
+        renderMarketplace();
+      });
+    });
+
+    function initFilters() {
+      const catBtns = document.querySelectorAll('#market-category-tabs .tab-btn');
+      catBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          catBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeCat = btn.dataset.cat;
+          renderMarketplace();
+        });
+      });
+
+      const sortSelect = document.getElementById('market-sort-select');
+      if (sortSelect) {
+        sortSelect.addEventListener('change', (e) => {
+          activeSort = e.target.value;
+          renderMarketplace();
+        });
+      }
+
+      const searchInput = document.getElementById('market-search-input');
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          searchQuery = e.target.value;
+          renderMarketplace();
+        });
+      }
+
+      // Sell Modal
+      const sellBtn = document.getElementById('sell-item-trigger-btn');
+      const sellModal = document.getElementById('sell-item-modal');
+      const closeSell = document.getElementById('close-sell-modal');
+      const cancelSell = document.getElementById('cancel-sell-btn');
+      const closeSellFn = () => sellModal.classList.remove('active');
+
+      if (sellBtn) sellBtn.addEventListener('click', () => sellModal.classList.add('active'));
+      if (closeSell) closeSell.addEventListener('click', closeSellFn);
+      if (cancelSell) cancelSell.addEventListener('click', closeSellFn);
+      if (sellModal) {
+        sellModal.addEventListener('click', (e) => {
+          if (e.target === sellModal) closeSellFn();
+        });
+      }
+
+      // Submit Sell Form
+      const sellForm = document.getElementById('sell-item-form');
+      if (sellForm) {
+        sellForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          window.CampusDB.createMarketplaceListing({
+            title: document.getElementById('item-title').value,
+            category: document.getElementById('item-category').value,
+            price: document.getElementById('item-price').value,
+            condition: document.getElementById('item-condition').value,
+            contact: document.getElementById('item-contact').value,
+            description: document.getElementById('item-desc').value
+          });
+          closeSellFn();
+          window.showToast('Item successfully listed on student marketplace!', 'success');
+        });
+      }
+
+      // Contact Modal
+      const contactModal = document.getElementById('contact-seller-modal');
+      const closeContact = document.getElementById('close-contact-modal');
+      const closeContactFn = () => contactModal.classList.remove('active');
+      if (closeContact) closeContact.addEventListener('click', closeContactFn);
+      if (contactModal) {
+        contactModal.addEventListener('click', (e) => {
+          if (e.target === contactModal) closeContactFn();
+        });
+      }
+
+      const inquiryForm = document.getElementById('contact-inquiry-form');
+      if (inquiryForm) {
+        inquiryForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          closeContactFn();
+          window.showToast('Inquiry notification delivered to student seller!', 'success');
+        });
+      }
+    }
+
+    function renderModerationBanner() {
+      const slot = document.getElementById('admin-moderation-banner-slot');
+      if (!slot) return;
+
+      const isAdmin = window.CampusDB.isAdmin();
+      if (!isAdmin) {
+        slot.innerHTML = '';
+        return;
+      }
+
+      slot.innerHTML = `
+        <div style="background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.35); border-radius: var(--radius-md); padding: 14px 20px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <i data-lucide="shield" style="width: 20px; height: 20px; color: #c084fc;"></i>
+            <span style="font-size: 0.88rem; color: #c084fc; font-weight: 600;">Administrator Moderation Controls Active: Moderate and delete inappropriate student listings.</span>
+          </div>
+          <span class="badge badge-violet">Live Moderation</span>
+        </div>
+      `;
+      window.refreshLucideIcons();
+    }
+
+    function renderMarketplace() {
+      const container = document.getElementById('marketplace-grid-container');
+      if (!container) return;
+
+      const user = window.CampusDB.getCurrentUser();
+      const isAdmin = window.CampusDB.isAdmin();
+
+      const listings = window.CampusDB.getMarketplaceListings({
+        category: activeCat,
+        search: searchQuery,
+        sort: activeSort
+      });
+
+      if (listings.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 48px; background: var(--bg-surface); border-radius: 12px; color: var(--text-muted);">
+            <i data-lucide="shopping-bag" style="width: 36px; height: 36px; margin-bottom: 12px; opacity: 0.5;"></i>
+            <p>No listings matching your search.</p>
+          </div>
+        `;
+        window.refreshLucideIcons();
+        return;
+      }
+
+      container.innerHTML = listings.map(item => {
+        const isOwner = user && item.sellerId === user.id;
+
+        return `
+          <div class="market-card">
+            <div>
+              <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px;">
+                <span class="badge ${item.category === 'Textbooks' ? 'badge-cyan' : item.category === 'Electronics' ? 'badge-violet' : 'badge-amber'}">
+                  ${item.category}
+                </span>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span class="badge badge-emerald" style="font-size: 0.72rem;">${item.condition}</span>
+                  ${(isAdmin || isOwner) ? `
+                    <button type="button" class="btn btn-sm btn-danger delete-item-btn" data-id="${item.id}" style="padding: 2px 6px; font-size: 0.7rem;">Delete</button>
+                  ` : ''}
+                </div>
+              </div>
+
+              <h2 style="font-size: 1.15rem; line-height: 1.35; margin-bottom: 6px; color: var(--text-primary);">${item.title}</h2>
+              <div style="font-size: 1.35rem; font-weight: 800; font-family: var(--font-mono); color: #34d399; margin-bottom: 12px;">
+                ₹${item.price}
+              </div>
+
+              <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 16px;">
+                ${item.description}
+              </p>
+
+              <div style="background: var(--bg-deep); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 10px 12px; font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 16px;">
+                <div>Seller: <strong style="color: var(--text-primary);">${item.sellerName}</strong></div>
+                <div style="color: var(--text-muted); font-size: 0.72rem; margin-top: 2px;">Listed on ${item.date}</div>
+              </div>
+            </div>
+
+            <div style="border-top: 1px solid var(--border-subtle); padding-top: 14px; display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-size: 0.75rem; color: var(--text-muted);">${item.contact ? 'Verified Student' : 'On-Campus'}</span>
+              <button type="button" class="btn btn-primary btn-sm contact-seller-btn" data-id="${item.id}" data-title="${item.title}" data-price="${item.price}" data-seller="${item.sellerName}" data-contact="${item.sellerContact}">
+                <i data-lucide="message-square" style="width: 14px; height: 14px;"></i>
+                <span>Contact Seller</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Contact Seller handler
+      container.querySelectorAll('.contact-seller-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.getElementById('contact-modal-item-title').textContent = btn.dataset.title;
+          document.getElementById('seller-modal-name').textContent = btn.dataset.seller;
+          document.getElementById('seller-modal-price').textContent = '₹' + btn.dataset.price;
+          document.getElementById('seller-modal-contact').textContent = btn.dataset.contact;
+          document.getElementById('contact-seller-modal').classList.add('active');
+        });
+      });
+
+      // Delete item
+      container.querySelectorAll('.delete-item-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (confirm('Delete this marketplace listing?')) {
+            window.CampusDB.deleteMarketplaceListing(btn.dataset.id);
+            window.showToast('Listing removed', 'info');
+          }
+        });
+      });
+
+      window.refreshLucideIcons();
+    }
+  </script>
+
+</body>
+</html>

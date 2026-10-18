@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Campus 360 Campus Life — College fests, Lost & Found center, campus navigation directory, and student clubs." />
+  <title>Campus Life | Campus 360</title>
+  
+  <link rel="stylesheet" href="../css/dark-theme.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    .subnav-tabs {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 24px;
+      overflow-x: auto;
+    }
+
+    .subnav-btn {
+      padding: 12px 18px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .subnav-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .subnav-btn.active {
+      color: var(--cyan-primary);
+      border-bottom-color: var(--cyan-primary);
+    }
+
+    .fest-banner-card {
+      background: linear-gradient(135deg, rgba(14, 20, 34, 0.95), rgba(30, 41, 68, 0.85));
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: var(--radius-lg);
+      padding: 36px 32px;
+      margin-bottom: 32px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(0, 240, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .fest-banner-card::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(0, 240, 255, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .event-item-card, .lost-found-card, .location-card, .club-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.25s ease;
+    }
+
+    .event-item-card:hover, .lost-found-card:hover, .location-card:hover, .club-card:hover {
+      border-color: rgba(56, 189, 248, 0.35);
+      background: var(--bg-surface-elevated);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+    }
+
+    .digital-ticket-box {
+      background: linear-gradient(135deg, #090d18, #131c33);
+      border: 1px dashed var(--cyan-primary);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .route-planner-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 8px 0;
+      font-size: 0.88rem;
+    }
+
+    .step-number {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(0, 240, 255, 0.15);
+      color: var(--cyan-primary);
+      font-weight: 700;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body data-page="campus-life">
+
+  <main class="container" style="padding-top: 24px; padding-bottom: 64px;">
+    
+    <!-- Page Header -->
+    <div class="page-header-wrap">
+      <div class="page-header-flex">
+        <div>
+          <span class="badge badge-cyan" style="margin-bottom: 8px;">🎉 Campus Ecosystem & Community</span>
+          <h1 class="page-title">Campus Life Hub</h1>
+          <p class="page-subtitle">
+            College fests, 36-hour hackathons, Lost & Found center, interactive campus navigation, and student clubs.
+          </p>
+        </div>
+        <div id="campus-life-admin-slot"></div>
+      </div>
+    </div>
+
+    <!-- Sub-Navigation Tabs -->
+    <div class="subnav-tabs" id="campus-life-subnav">
+      <div class="subnav-btn active" data-pane="events">
+        <i data-lucide="sparkles" style="width: 17px; height: 17px;"></i>
+        <span>Events & Fests</span>
+      </div>
+      <div class="subnav-btn" data-pane="lost-found">
+        <i data-lucide="search" style="width: 17px; height: 17px;"></i>
+        <span>Lost & Found Center</span>
+      </div>
+      <div class="subnav-btn" data-pane="map">
+        <i data-lucide="map-pin" style="width: 17px; height: 17px;"></i>
+        <span>Campus Navigation & Map</span>
+      </div>
+      <div class="subnav-btn" data-pane="clubs">
+        <i data-lucide="users" style="width: 17px; height: 17px;"></i>
+        <span>Clubs & Societies</span>
+      </div>
+    </div>
+
+    <!-- =========================================================================
+         PANE 1: EVENTS & FESTS
+         ========================================================================= -->
+    <section id="pane-events" class="tab-pane-content">
+      <!-- Featured College Fest Banner -->
+      <div class="fest-banner-card" id="featured-fest-banner">
+        <div style="max-width: 680px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+            <span class="badge badge-cyan">Featured Flagship Fest</span>
+            <span class="badge badge-violet">March 5-7, 2026</span>
+          </div>
+          <h2 style="font-size: 2rem; margin-bottom: 10px; line-height: 1.2;">
+            Technova 2026: Annual Inter-College Tech Symposium
+          </h2>
+          <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin-bottom: 22px;">
+            Join 1,200+ engineering students for 3 adrenaline-fueled days of drone racing, hackathons, AI paper symposia, and robotics combat with prize pools over ₹3,50,000.
+          </p>
+          <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-primary" id="featured-fest-pass-btn">
+              <i data-lucide="ticket" style="width: 16px; height: 16px;"></i>
+              <span id="featured-btn-text">Claim 1-Click All-Access Pass</span>
+            </button>
+            <span style="font-size: 0.82rem; color: var(--text-muted); font-family: var(--font-mono);">Free for all enrolled students • Auditorium & Labs</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Filters & Search -->
+      <div class="filter-action-bar">
+        <div class="tabs-group" id="event-category-tabs">
+          <button type="button" class="tab-btn active" data-cat="all">All Events</button>
+          <button type="button" class="tab-btn" data-cat="Fest">Fests</button>
+          <button type="button" class="tab-btn" data-cat="Hackathon">Hackathons</button>
+          <button type="button" class="tab-btn" data-cat="Workshop">Workshops</button>
+          <button type="button" class="tab-btn" data-cat="Sports">Sports</button>
+          <button type="button" class="tab-btn" data-cat="Cultural">Cultural</button>
+          <button type="button" class="tab-btn" data-cat="my-passes" style="color: var(--cyan-primary);">🎟️ My Passes</button>
+        </div>
+
+        <div class="search-input-box">
+          <i data-lucide="search" style="width: 16px; height: 16px;"></i>
+          <input type="search" id="events-search-input" placeholder="Search events, venues, organizers..." />
+        </div>
+      </div>
+
+      <!-- Events Grid -->
+      <div id="events-grid-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px;"></div>
+    </section>
+
+    <!-- =========================================================================
+         PANE 2: A. LOST & FOUND CENTER
+         ========================================================================= -->
+    <section id="pane-lost-found" class="tab-pane-content" style="display: none;">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 22px;">
+        <div>
+          <h2 style="font-size: 1.4rem; margin-bottom: 4px;">Lost & Found Community Center</h2>
+          <p style="color: var(--text-secondary); font-size: 0.88rem;">
+            Report misplaced items, browse found valuables deposited at campus security, and submit ownership verification claims.
+          </p>
+        </div>
+        <button type="button" class="btn btn-primary btn-sm" id="report-item-modal-btn">
+          <i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i>
+          <span>+ Report Lost / Found Item</span>
+        </button>
+      </div>
+
+      <!-- Lost & Found Filter Bar -->
+      <div class="filter-action-bar">
+        <div class="tabs-group" id="lf-status-tabs">
+          <button type="button" class="tab-btn active" data-status="all">All Registry</button>
+          <button type="button" class="tab-btn" data-status="lost">🔍 Lost Items</button>
+          <button type="button" class="tab-btn" data-status="found">🎁 Found Items</button>
+          <button type="button" class="tab-btn" data-status="claim_pending">⏳ Claim Pending</button>
+          <button type="button" class="tab-btn" data-status="returned">✅ Returned</button>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+          <select class="form-control" id="lf-category-select" style="width: auto; padding: 7px 12px; font-size: 0.82rem;">
+            <option value="all">All Categories</option>
+            <option value="Electronics">Electronics</option>
+            <option value="ID Cards">ID Cards</option>
+            <option value="Keys & Wallets">Keys & Wallets</option>
+            <option value="Books & Stationery">Books & Stationery</option>
+            <option value="Apparel & Bags">Apparel & Bags</option>
+            <option value="Other">Other</option>
+          </select>
+
+          <div class="search-input-box">
+            <i data-lucide="search" style="width: 16px; height: 16px;"></i>
+            <input type="search" id="lf-search-input" placeholder="Search wallet, AirPods, keys..." />
+          </div>
+        </div>
+      </div>
+
+      <!-- Lost & Found Cards Grid -->
+      <div id="lf-grid-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 22px;"></div>
+    </section>
+
+    <!-- =========================================================================
+         PANE 3: B. CAMPUS NAVIGATION & MAP
+         ========================================================================= -->
+    <section id="pane-map" class="tab-pane-content" style="display: none;">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 22px;">
+        <div>
+          <h2 style="font-size: 1.4rem; margin-bottom: 4px;">Campus Directory & Navigation Map</h2>
+          <p style="color: var(--text-secondary); font-size: 0.88rem;">
+            Interactive map directory of buildings, laboratories, lecture halls, and step-by-step route directions.
+          </p>
+        </div>
+        <div id="admin-add-location-slot"></div>
+      </div>
+
+      <!-- Point-to-Point Route Planner -->
+      <div class="route-planner-box">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 14px;">
+          <i data-lucide="navigation" style="width: 18px; height: 18px; color: var(--cyan-primary);"></i>
+          <h3 style="font-size: 1.05rem;">Quick Route & Directions Finder</h3>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 14px; align-items: flex-end;">
+          <div>
+            <label class="form-label">Current Location (From)</label>
+            <select class="form-control" id="route-start-select"></select>
+          </div>
+          <div>
+            <label class="form-label">Destination Facility (To)</label>
+            <select class="form-control" id="route-end-select"></select>
+          </div>
+          <button type="button" class="btn btn-primary" id="get-directions-btn" style="height: 42px;">
+            Get Route
+          </button>
+        </div>
+        <div id="directions-result-container" style="margin-top: 16px; display: none;"></div>
+      </div>
+
+      <!-- Campus Locations Filter & Grid -->
+      <div class="filter-action-bar">
+        <div class="tabs-group" id="location-category-tabs">
+          <button type="button" class="tab-btn active" data-cat="all">All Facilities</button>
+          <button type="button" class="tab-btn" data-cat="Classrooms">Classrooms</button>
+          <button type="button" class="tab-btn" data-cat="Laboratories">Labs & Research</button>
+          <button type="button" class="tab-btn" data-cat="Library & Study">Library</button>
+          <button type="button" class="tab-btn" data-cat="Food & Dining">Food & Canteen</button>
+          <button type="button" class="tab-btn" data-cat="Facilities">Medical & Admin</button>
+        </div>
+
+        <div class="search-input-box">
+          <i data-lucide="search" style="width: 16px; height: 16px;"></i>
+          <input type="search" id="locations-search-input" placeholder="Search building, room code, or lab..." />
+        </div>
+      </div>
+
+      <div id="locations-grid-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 22px;"></div>
+    </section>
+
+    <!-- =========================================================================
+         PANE 4: D. STUDENT CLUBS & SOCIETIES
+         ========================================================================= -->
+    <section id="pane-clubs" class="tab-pane-content" style="display: none;">
+      <div style="margin-bottom: 24px;">
+        <h2 style="font-size: 1.4rem; margin-bottom: 4px;">Student Clubs & Communities</h2>
+        <p style="color: var(--text-secondary); font-size: 0.88rem;">
+          Connect with technical clubs, coding societies, arts chapters, and athletic sports teams.
+        </p>
+      </div>
+
+      <div id="clubs-grid-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 22px;"></div>
+    </section>
+
+  </main>
+
+  <!-- Digital Pass Modal -->
+  <div class="modal-backdrop-custom" id="pass-modal">
+    <div class="modal-container-custom" style="max-width: 460px;">
+      <div class="modal-header-custom">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <i data-lucide="ticket" style="width: 18px; height: 18px; color: var(--cyan-primary);"></i>
+          <h3 style="font-size: 1.1rem;">Digital Event Entry Pass</h3>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" id="close-pass-modal">✕</button>
+      </div>
+      <div class="modal-body-custom">
+        <div class="digital-ticket-box">
+          <span class="badge badge-cyan" style="margin-bottom: 10px;">VERIFIED STUDENT PASS</span>
+          <h2 id="modal-pass-event-title" style="font-size: 1.3rem; margin-bottom: 6px;">Event Title</h2>
+          <p id="modal-pass-venue" style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px;">Venue Details</p>
+
+          <div style="background: rgba(0, 240, 255, 0.08); border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+            <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Pass Code</span>
+            <div id="modal-pass-code" style="font-size: 1.4rem; font-family: var(--font-mono); font-weight: 800; color: var(--cyan-primary); letter-spacing: 0.08em;">
+              TKT-TEC-8842
+            </div>
+          </div>
+
+          <div style="font-size: 0.78rem; color: var(--text-muted); text-align: left; line-height: 1.6;">
+            <div>• Pass Holder: <strong id="modal-pass-holder" style="color: var(--text-primary);">Alex Turner</strong></div>
+            <div>• Student ID: <strong id="modal-pass-id" style="color: var(--text-primary);">STU-2024-8842</strong></div>
+            <div>• Entry Protocol: Present this code or screen at the entrance checkpoint.</div>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="save-pass-btn" style="width: 100%; margin-top: 18px;">
+          <i data-lucide="check" style="width: 16px; height: 16px;"></i>
+          Done & Saved to Profile
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Report Lost & Found Item Modal -->
+  <div class="modal-backdrop-custom" id="report-lf-modal">
+    <div class="modal-container-custom" style="max-width: 580px;">
+      <div class="modal-header-custom">
+        <h3 style="font-size: 1.15rem;">Report Lost or Found Item</h3>
+        <button type="button" class="btn btn-secondary btn-sm" id="close-report-lf-modal">✕</button>
+      </div>
+      <div class="modal-body-custom">
+        <form id="report-lf-form">
+          <div class="form-group">
+            <label class="form-label">Report Type</label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <label style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--bg-deep); border: 1px solid var(--border-subtle); border-radius: 8px; cursor: pointer;">
+                <input type="radio" name="lf-type" value="lost" checked style="accent-color: var(--rose-danger);" />
+                <span><strong>I Lost an Item</strong></span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--bg-deep); border: 1px solid var(--border-subtle); border-radius: 8px; cursor: pointer;">
+                <input type="radio" name="lf-type" value="found" style="accent-color: var(--cyan-primary);" />
+                <span><strong>I Found an Item</strong></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Item Title & Identifier</label>
+            <input type="text" class="form-control" id="lf-title" placeholder="e.g. Black Leather Wallet with Student ID / AirPods Pro in Blue Case" required />
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <select class="form-control" id="lf-category">
+                <option value="Electronics">Electronics</option>
+                <option value="ID Cards">ID Cards</option>
+                <option value="Keys & Wallets">Keys & Wallets</option>
+                <option value="Books & Stationery">Books & Stationery</option>
+                <option value="Apparel & Bags">Apparel & Bags</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Date Discovered / Misplaced</label>
+              <input type="date" class="form-control" id="lf-date" value="2026-02-18" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Campus Location</label>
+            <input type="text" class="form-control" id="lf-location" placeholder="e.g. HPC Lab 402, Desk 14 / Canteen Table 12 / Sports Ground" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Description & Distinguishing Features</label>
+            <textarea class="form-control" id="lf-desc" placeholder="Describe color, brand, stickers, keychains or specific markings." required></textarea>
+          </div>
+
+          <div style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 12px; font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 18px;">
+            🔒 <strong>Privacy Assurance:</strong> Personal contact info is never displayed publicly. Items deposited at Security can be claimed through verified proof submission.
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" class="btn btn-secondary" id="cancel-report-lf-btn">Cancel</button>
+            <button type="submit" class="btn btn-primary">Submit Report to Registry</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Claim Ownership Modal -->
+  <div class="modal-backdrop-custom" id="claim-lf-modal">
+    <div class="modal-container-custom" style="max-width: 500px;">
+      <div class="modal-header-custom">
+        <div>
+          <h3 style="font-size: 1.15rem;">Submit Ownership Verification Claim</h3>
+          <span id="claim-target-title" style="font-size: 0.8rem; color: var(--cyan-primary);">Item Name</span>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" id="close-claim-modal">✕</button>
+      </div>
+      <div class="modal-body-custom">
+        <form id="claim-lf-form">
+          <input type="hidden" id="claim-item-id" value="" />
+          <div class="form-group">
+            <label class="form-label">Proof of Ownership Description</label>
+            <textarea class="form-control" id="claim-proof-desc" placeholder="Provide distinct proof (e.g. serial number, specific engraving, lockscreen wallpaper, or exact contents inside wallet/bag)" required></textarea>
+          </div>
+          <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 18px;">
+            Your claim will be verified by campus administration / security desk before releasing the item.
+          </p>
+          <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" class="btn btn-secondary" id="cancel-claim-btn">Cancel</button>
+            <button type="submit" class="btn btn-primary">Submit Claim</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Add Location Modal -->
+  <div class="modal-backdrop-custom" id="location-admin-modal">
+    <div class="modal-container-custom" style="max-width: 580px;">
+      <div class="modal-header-custom">
+        <h3 style="font-size: 1.15rem;">Add Campus Location</h3>
+        <button type="button" class="btn btn-secondary btn-sm" id="close-loc-modal">✕</button>
+      </div>
+      <div class="modal-body-custom">
+        <form id="location-form">
+          <div class="form-group">
+            <label class="form-label">Facility / Room Name</label>
+            <input type="text" class="form-control" id="loc-name" placeholder="e.g. Advanced Robotics & Embedded Systems Lab" required />
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label">Code / Identifier</label>
+              <input type="text" class="form-control" id="loc-code" placeholder="ROBO-102" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <select class="form-control" id="loc-cat">
+                <option value="Classrooms">Classrooms</option>
+                <option value="Laboratories">Laboratories</option>
+                <option value="Library & Study">Library & Study</option>
+                <option value="Food & Dining">Food & Dining</option>
+                <option value="Facilities">Facilities & Admin</option>
+                <option value="Sports & Amenities">Sports & Amenities</option>
+              </select>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label">Building</label>
+              <input type="text" class="form-control" id="loc-building" value="Block B" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Floor</label>
+              <input type="text" class="form-control" id="loc-floor" value="1st Floor" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Operating Hours</label>
+            <input type="text" class="form-control" id="loc-hours" value="08:30 AM - 06:30 PM" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" id="loc-desc" placeholder="Equipment available, seating capacity, or access rules." required></textarea>
+          </div>
+          <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" class="btn btn-secondary" id="cancel-loc-btn">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Location</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../js/db.js"></script>
+  <script src="../js/page-shell.js"></script>
+
+  <script>
+    let currentPane = 'events';
+    let lfStatusFilter = 'all';
+    let lfCatFilter = 'all';
+    let lfSearchQuery = '';
+    let locCatFilter = 'all';
+    let locSearchQuery = '';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initSubnavPanes();
+      renderEvents();
+      renderLostFound();
+      renderLocations();
+      renderClubs();
+      renderAdminSlots();
+      populateRouteSelects();
+
+      // Check URL hash for direct tab linking
+      if (window.location.hash === '#lost-found') {
+        switchPane('lost-found');
+      } else if (window.location.hash === '#map') {
+        switchPane('map');
+      } else if (window.location.hash === '#clubs') {
+        switchPane('clubs');
+      }
+
+      window.addEventListener('campus:db-change', () => {
+        renderEvents();
+        renderLostFound();
+        renderLocations();
+        renderClubs();
+      });
+      window.addEventListener('campus:auth-change', () => {
+        renderAdminSlots();
+        renderEvents();
+        renderLostFound();
+        renderLocations();
+      });
+    });
+
+    function initSubnavPanes() {
+      const btns = document.querySelectorAll('#campus-life-subnav .subnav-btn');
+      btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          switchPane(btn.dataset.pane);
+        });
+      });
+
+      // Lost & Found filters
+      document.querySelectorAll('#lf-status-tabs .tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#lf-status-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          lfStatusFilter = btn.dataset.status;
+          renderLostFound();
+        });
+      });
+
+      const lfCat = document.getElementById('lf-category-select');
+      if (lfCat) {
+        lfCat.addEventListener('change', (e) => {
+          lfCatFilter = e.target.value;
+          renderLostFound();
+        });
+      }
+
+      const lfSearch = document.getElementById('lf-search-input');
+      if (lfSearch) {
+        lfSearch.addEventListener('input', (e) => {
+          lfSearchQuery = e.target.value;
+          renderLostFound();
+        });
+      }
+
+      // Location filters
+      document.querySelectorAll('#location-category-tabs .tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#location-category-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          locCatFilter = btn.dataset.cat;
+          renderLocations();
+        });
+      });
+
+      const locSearch = document.getElementById('locations-search-input');
+      if (locSearch) {
+        locSearch.addEventListener('input', (e) => {
+          locSearchQuery = e.target.value;
+          renderLocations();
+        });
+      }
+
+      // Route Directions Button
+      const dirBtn = document.getElementById('get-directions-btn');
+      if (dirBtn) {
+        dirBtn.addEventListener('click', () => {
+          const fromId = document.getElementById('route-start-select').value;
+          const toId = document.getElementById('route-end-select').value;
+          const dir = window.CampusDB.getDirections(fromId, toId);
+          const res = document.getElementById('directions-result-container');
+          if (dir && res) {
+            res.style.display = 'block';
+            res.innerHTML = `
+              <div style="background: var(--bg-deep); border: 1px solid rgba(0, 240, 255, 0.25); border-radius: 8px; padding: 14px 16px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                  <strong style="color: var(--cyan-primary);">${dir.from} → ${dir.to}</strong>
+                  <span class="badge badge-emerald">${dir.estimatedTime} (${dir.distance})</span>
+                </div>
+                <div>
+                  ${dir.steps.map((st, i) => `
+                    <div class="step-item">
+                      <span class="step-number">${i + 1}</span>
+                      <span>${st}</span>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            `;
+          }
+        });
+      }
+
+      // Lost & Found Report Modal
+      const rptBtn = document.getElementById('report-item-modal-btn');
+      const rptModal = document.getElementById('report-lf-modal');
+      const closeRpt = document.getElementById('close-report-lf-modal');
+      const cancelRpt = document.getElementById('cancel-report-lf-btn');
+      const closeRptFn = () => rptModal.classList.remove('active');
+      if (rptBtn) rptBtn.addEventListener('click', () => rptModal.classList.add('active'));
+      if (closeRpt) closeRpt.addEventListener('click', closeRptFn);
+      if (cancelRpt) cancelRpt.addEventListener('click', closeRptFn);
+
+      const rptForm = document.getElementById('report-lf-form');
+      if (rptForm) {
+        rptForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const selectedType = document.querySelector('input[name="lf-type"]:checked').value;
+          window.CampusDB.reportLostFoundItem({
+            type: selectedType,
+            title: document.getElementById('lf-title').value,
+            category: document.getElementById('lf-category').value,
+            date: document.getElementById('lf-date').value,
+            location: document.getElementById('lf-location').value,
+            description: document.getElementById('lf-desc').value
+          });
+          closeRptFn();
+          window.showToast('Item report logged in verified campus registry', 'success');
+        });
+      }
+
+      // Claim Modal
+      const claimModal = document.getElementById('claim-lf-modal');
+      const closeClaim = document.getElementById('close-claim-modal');
+      const cancelClaim = document.getElementById('cancel-claim-btn');
+      const closeClaimFn = () => claimModal.classList.remove('active');
+      if (closeClaim) closeClaim.addEventListener('click', closeClaimFn);
+      if (cancelClaim) cancelClaim.addEventListener('click', closeClaimFn);
+
+      const claimForm = document.getElementById('claim-lf-form');
+      if (claimForm) {
+        claimForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const itemId = document.getElementById('claim-item-id').value;
+          const desc = document.getElementById('claim-proof-desc').value;
+          window.CampusDB.claimLostFoundItem(itemId, { proofDescription: desc });
+          closeClaimFn();
+          window.showToast('Ownership claim submitted for admin review!', 'success');
+        });
+      }
+    }
+
+    function switchPane(paneName) {
+      currentPane = paneName;
+      document.querySelectorAll('#campus-life-subnav .subnav-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.pane === paneName);
+      });
+      document.querySelectorAll('.tab-pane-content').forEach(p => p.style.display = 'none');
+      const active = document.getElementById(`pane-${paneName}`);
+      if (active) active.style.display = 'block';
+      window.refreshLucideIcons();
+    }
+
+    // ----------------------------------------------------
+    // RENDER EVENTS
+    // ----------------------------------------------------
+    function renderEvents() {
+      const container = document.getElementById('events-grid-container');
+      if (!container) return;
+
+      const isAdmin = window.CampusDB.isAdmin();
+      const events = window.CampusDB.getEvents({ onlyPublished: !isAdmin });
+
+      container.innerHTML = events.map(evt => {
+        const isRegistered = window.CampusDB.isEventRegistered(evt.id);
+        return `
+          <div class="event-item-card">
+            <div>
+              <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px;">
+                <span class="badge ${evt.category === 'Fest' ? 'badge-cyan' : 'badge-violet'}">${evt.category}</span>
+                <span style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">${evt.fee}</span>
+              </div>
+              <h3 style="font-size: 1.15rem; margin-bottom: 6px;">${evt.title}</h3>
+              <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 14px;">${evt.description}</p>
+              <div style="font-size: 0.78rem; color: var(--text-muted); background: var(--bg-deep); padding: 8px 12px; border-radius: 6px; margin-bottom: 16px;">
+                <div>📅 ${evt.date} • ${evt.time}</div>
+                <div>📍 ${evt.venue}</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border-subtle); padding-top: 12px;">
+              <span style="font-size: 0.75rem; color: var(--text-muted);">${(evt.registeredUsers || []).length} / ${evt.capacity} Spots</span>
+              <button type="button" class="btn btn-sm ${isRegistered ? 'btn-secondary' : 'btn-primary'} reg-evt-btn" data-id="${evt.id}">
+                ${isRegistered ? 'Pass Active' : 'Register Free Pass'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      container.querySelectorAll('.reg-evt-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const res = window.CampusDB.registerForEvent(btn.dataset.id);
+          window.showToast(res.registered ? 'Pass Issued!' : 'Registration cancelled', 'info');
+        });
+      });
+      window.refreshLucideIcons();
+    }
+
+    // ----------------------------------------------------
+    // RENDER A. LOST & FOUND
+    // ----------------------------------------------------
+    function renderLostFound() {
+      const container = document.getElementById('lf-grid-container');
+      if (!container) return;
+
+      const isAdmin = window.CampusDB.isAdmin();
+      const items = window.CampusDB.getLostFoundItems({
+        status: lfStatusFilter,
+        category: lfCatFilter,
+        search: lfSearchQuery
+      });
+
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 48px; background: var(--bg-surface); border-radius: 12px; color: var(--text-muted);">
+            <i data-lucide="inbox" style="width: 36px; height: 36px; margin-bottom: 12px; opacity: 0.5;"></i>
+            <p>No lost or found items found matching your filter.</p>
+          </div>
+        `;
+        window.refreshLucideIcons();
+        return;
+      }
+
+      container.innerHTML = items.map(item => {
+        const statusBadgeClass = item.status === 'lost' ? 'badge-rose' : item.status === 'found' ? 'badge-cyan' : item.status === 'claim_pending' ? 'badge-amber' : 'badge-emerald';
+        const statusLabel = item.status === 'lost' ? '🔍 Lost' : item.status === 'found' ? '🎁 Found' : item.status === 'claim_pending' ? '⏳ Claim Pending' : '✅ Returned to Owner';
+
+        return `
+          <div class="lost-found-card">
+            <div>
+              <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px;">
+                <span class="badge ${statusBadgeClass}">${statusLabel}</span>
+                <span style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono);">${item.date}</span>
+              </div>
+
+              <h3 style="font-size: 1.15rem; margin-bottom: 6px;">${item.title}</h3>
+              <strong style="font-size: 0.8rem; color: var(--cyan-primary); display: block; margin-bottom: 8px;">
+                Category: ${item.category} • Location: ${item.location}
+              </strong>
+
+              <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 16px;">
+                ${item.description}
+              </p>
+
+              <div style="background: var(--bg-deep); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 10px 12px; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 16px;">
+                <div>Reported by: <strong style="color: var(--text-primary);">${item.reporterName}</strong></div>
+                <div>Status: <span style="color: var(--text-secondary); text-transform: uppercase;">${item.status}</span></div>
+                ${item.claims && item.claims.length > 0 ? `
+                  <div style="color: #fbbf24; margin-top: 4px;">• ${item.claims.length} claim(s) under security verification</div>
+                ` : ''}
+              </div>
+            </div>
+
+            <div style="border-top: 1px solid var(--border-subtle); padding-top: 14px; display: flex; align-items: center; justify-content: space-between;">
+              ${isAdmin ? `
+                <div style="display: flex; gap: 6px;">
+                  ${item.status === 'claim_pending' ? `
+                    <button type="button" class="btn btn-sm btn-primary approve-claim-admin-btn" data-id="${item.id}" data-claimid="${item.claims[0] ? item.claims[0].id : ''}">Approve Claim</button>
+                  ` : ''}
+                  <button type="button" class="btn btn-sm btn-danger delete-lf-btn" data-id="${item.id}">Delete</button>
+                </div>
+              ` : `
+                ${item.status === 'returned' ? `
+                  <span style="font-size: 0.75rem; color: #34d399; font-weight: 600;">Closed & Returned</span>
+                ` : `
+                  <button type="button" class="btn btn-secondary btn-sm claim-item-btn" data-id="${item.id}" data-title="${item.title}">
+                    <i data-lucide="shield" style="width: 14px; height: 14px;"></i>
+                    <span>Claim Ownership</span>
+                  </button>
+                `}
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      container.querySelectorAll('.claim-item-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.getElementById('claim-item-id').value = btn.dataset.id;
+          document.getElementById('claim-target-title').textContent = btn.dataset.title;
+          document.getElementById('claim-lf-modal').classList.add('active');
+        });
+      });
+
+      if (isAdmin) {
+        container.querySelectorAll('.approve-claim-admin-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            window.CampusDB.verifyClaim(btn.dataset.id, btn.dataset.claimid, 'approve');
+            window.showToast('Claim approved and item marked as returned!', 'success');
+          });
+        });
+        container.querySelectorAll('.delete-lf-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (confirm('Delete this Lost & Found registry entry?')) {
+              window.CampusDB.deleteLostFound(btn.dataset.id);
+              window.showToast('Item report removed', 'info');
+            }
+          });
+        });
+      }
+
+      window.refreshLucideIcons();
+    }
+
+    // ----------------------------------------------------
+    // RENDER B. CAMPUS NAVIGATION & MAP
+    // ----------------------------------------------------
+    function renderLocations() {
+      const container = document.getElementById('locations-grid-container');
+      if (!container) return;
+
+      const locs = window.CampusDB.getCampusLocations(locCatFilter, locSearchQuery);
+
+      container.innerHTML = locs.map(l => `
+        <div class="location-card">
+          <div>
+            <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px;">
+              <span class="badge badge-cyan">${l.category}</span>
+              <span style="font-size: 0.75rem; font-family: var(--font-mono); color: var(--cyan-primary);">${l.code}</span>
+            </div>
+            <h3 style="font-size: 1.15rem; margin-bottom: 4px;">${l.name}</h3>
+            <strong style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 10px;">
+              ${l.building} • ${l.floor}
+            </strong>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 14px;">
+              ${l.description}
+            </p>
+          </div>
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 12px; display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted);">
+            <span>Hours: ${l.operatingHours}</span>
+            <span style="color: var(--cyan-primary); font-weight: 600;">${l.contact}</span>
+          </div>
+        </div>
+      `).join('');
+
+      window.refreshLucideIcons();
+    }
+
+    function populateRouteSelects() {
+      const startSelect = document.getElementById('route-start-select');
+      const endSelect = document.getElementById('route-end-select');
+      if (!startSelect || !endSelect) return;
+
+      const locs = window.CampusDB.getCampusLocations();
+      const opts = locs.map(l => `<option value="${l.id}">${l.name} (${l.code})</option>`).join('');
+
+      startSelect.innerHTML = opts;
+      endSelect.innerHTML = opts;
+      if (locs.length > 1) endSelect.selectedIndex = 1;
+    }
+
+    // ----------------------------------------------------
+    // RENDER D. CLUBS
+    // ----------------------------------------------------
+    function renderClubs() {
+      const container = document.getElementById('clubs-grid-container');
+      if (!container) return;
+
+      const clubs = window.CampusDB.getClubs();
+
+      container.innerHTML = clubs.map(c => `
+        <div class="club-card">
+          <div>
+            <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px;">
+              <div style="font-size: 1.8rem;">${c.logo}</div>
+              <span class="badge ${c.category === 'Technical' ? 'badge-cyan' : 'badge-violet'}">${c.category}</span>
+            </div>
+            <h3 style="font-size: 1.15rem; margin-bottom: 4px;">${c.name}</h3>
+            <span style="font-size: 0.8rem; color: var(--cyan-primary); display: block; margin-bottom: 10px;">
+              Lead: ${c.lead} • ${c.members} Active Members
+            </span>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 14px;">
+              ${c.meeting}
+            </p>
+          </div>
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 12px; display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-size: 0.75rem; color: var(--text-muted);">${c.joined ? 'Member Active' : 'Open Registration'}</span>
+            <button type="button" class="btn btn-sm ${c.joined ? 'btn-secondary' : 'btn-primary'} join-club-btn" data-id="${c.id}">
+              ${c.joined ? 'Joined ✅' : 'Join Club'}
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      container.querySelectorAll('.join-club-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const club = window.CampusDB.toggleClubJoin(btn.dataset.id);
+          window.showToast(club.joined ? `Joined ${club.name}!` : `Left ${club.name}`, 'info');
+        });
+      });
+
+      window.refreshLucideIcons();
+    }
+
+    function renderAdminSlots() {
+      const slot = document.getElementById('campus-life-admin-slot');
+      const mapSlot = document.getElementById('admin-add-location-slot');
+      const isAdmin = window.CampusDB.isAdmin();
+
+      if (slot) {
+        slot.innerHTML = isAdmin ? `
+          <button type="button" class="btn btn-violet btn-sm" id="admin-create-event-top-btn">
+            <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
+            + Add Fest / Event
+          </button>
+        ` : '';
+      }
+
+      if (mapSlot) {
+        mapSlot.innerHTML = isAdmin ? `
+          <button type="button" class="btn btn-secondary btn-sm" id="admin-add-location-btn">
+            <i data-lucide="map-pin" style="width: 14px; height: 14px;"></i>
+            + Add Building / Room
+          </button>
+        ` : '';
+      }
+
+      const addLocModal = document.getElementById('location-admin-modal');
+      const addLocBtn = document.getElementById('admin-add-location-btn');
+      const closeLoc = document.getElementById('close-loc-modal');
+      const cancelLoc = document.getElementById('cancel-loc-btn');
+      const closeLocFn = () => addLocModal.classList.remove('active');
+
+      if (addLocBtn && addLocModal) addLocBtn.addEventListener('click', () => addLocModal.classList.add('active'));
+      if (closeLoc) closeLoc.addEventListener('click', closeLocFn);
+      if (cancelLoc) cancelLoc.addEventListener('click', closeLocFn);
+
+      const locForm = document.getElementById('location-form');
+      if (locForm) {
+        locForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          window.CampusDB.addCampusLocation({
+            name: document.getElementById('loc-name').value,
+            code: document.getElementById('loc-code').value,
+            category: document.getElementById('loc-cat').value,
+            building: document.getElementById('loc-building').value,
+            floor: document.getElementById('loc-floor').value,
+            operatingHours: document.getElementById('loc-hours').value,
+            description: document.getElementById('loc-desc').value
+          });
+          closeLocFn();
+          window.showToast('New location added to campus directory!', 'success');
+        });
+      }
+
+      window.refreshLucideIcons();
+    }
+  </script>
+
+</body>
+</html>

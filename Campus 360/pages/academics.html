@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Campus 360 Academics Hub — Day-wise timetables, course notes, assignments, and exam schedules." />
+  <title>Academics Hub | Campus 360</title>
+  
+  <link rel="stylesheet" href="../css/dark-theme.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    .academics-subnav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 24px;
+      overflow-x: auto;
+    }
+
+    .subnav-link {
+      padding: 12px 16px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .subnav-link:hover {
+      color: var(--text-primary);
+    }
+
+    .subnav-link.active {
+      color: var(--cyan-primary);
+      border-bottom-color: var(--cyan-primary);
+    }
+
+    .day-pill-btn {
+      padding: 8px 16px;
+      border-radius: var(--radius-full);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .day-pill-btn:hover {
+      border-color: rgba(0, 240, 255, 0.3);
+      color: var(--text-primary);
+    }
+
+    .day-pill-btn.active {
+      background: var(--cyan-primary);
+      color: #06080d;
+      border-color: var(--cyan-primary);
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+    }
+
+    .material-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.25s ease;
+    }
+
+    .material-card:hover {
+      border-color: rgba(168, 85, 247, 0.35);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .file-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      color: #c084fc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body data-page="academics">
+
+  <main class="container" style="padding-top: 24px; padding-bottom: 64px;">
+    
+    <!-- Page Header -->
+    <div class="page-header-wrap">
+      <div class="page-header-flex">
+        <div>
+          <span class="badge badge-violet" style="margin-bottom: 8px;">📚 Core Curriculum & Resources</span>
+          <h1 class="page-title">Academics Hub</h1>
+          <p class="page-subtitle">
+            Weekly interactive schedule, lecture notes, syllabus manuals, assignment submissions, and exam hall seating.
+          </p>
+        </div>
+        <div id="admin-actions-slot"></div>
+      </div>
+    </div>
+
+    <!-- Academics Sub-Tabs -->
+    <div class="academics-subnav">
+      <div class="subnav-link active" data-tab="timetable">
+        <i data-lucide="clock" style="width: 16px; height: 16px;"></i>
+        <span>Weekly Timetable</span>
+      </div>
+      <div class="subnav-link" data-tab="materials">
+        <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
+        <span>Notes & Study Materials</span>
+      </div>
+      <div class="subnav-link" data-tab="assignments">
+        <i data-lucide="check-square" style="width: 16px; height: 16px;"></i>
+        <span>Assignments Tracker</span>
+      </div>
+      <div class="subnav-link" data-tab="exams">
+        <i data-lucide="calendar" style="width: 16px; height: 16px;"></i>
+        <span>Examination Schedule</span>
+      </div>
+    </div>
+
+    <!-- TAB 1: WEEKLY TIMETABLE -->
+    <section id="tab-timetable" class="tab-pane active">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 24px;">
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;" id="day-buttons-container">
+          <button type="button" class="day-pill-btn active" data-day="Monday">Monday</button>
+          <button type="button" class="day-pill-btn" data-day="Tuesday">Tuesday</button>
+          <button type="button" class="day-pill-btn" data-day="Wednesday">Wednesday</button>
+          <button type="button" class="day-pill-btn" data-day="Thursday">Thursday</button>
+          <button type="button" class="day-pill-btn" data-day="Friday">Friday</button>
+          <button type="button" class="day-pill-btn" data-day="Saturday">Saturday</button>
+        </div>
+        <span style="font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono);">B.Tech Computer Science — Semester 6 (Division A)</span>
+      </div>
+
+      <div id="timetable-periods-list" style="display: flex; flex-direction: column; gap: 14px;"></div>
+    </section>
+
+    <!-- TAB 2: STUDY MATERIALS -->
+    <section id="tab-materials" class="tab-pane" style="display: none;">
+      <div class="filter-action-bar">
+        <div class="tabs-group" id="material-subject-tabs">
+          <button type="button" class="tab-btn active" data-filter="all">All Subjects</button>
+          <button type="button" class="tab-btn" data-filter="Data Structures">DSA</button>
+          <button type="button" class="tab-btn" data-filter="Operating Systems">OS</button>
+          <button type="button" class="tab-btn" data-filter="Database">DBMS</button>
+          <button type="button" class="tab-btn" data-filter="Artificial Intelligence">AI/ML</button>
+        </div>
+        <div class="search-input-box">
+          <i data-lucide="search" style="width: 16px; height: 16px;"></i>
+          <input type="search" id="material-search" placeholder="Search notes by keyword..." />
+        </div>
+      </div>
+
+      <div id="materials-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;"></div>
+    </section>
+
+    <!-- TAB 3: ASSIGNMENTS TRACKER -->
+    <section id="tab-assignments" class="tab-pane" style="display: none;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+        <div class="tabs-group" id="assignment-status-tabs">
+          <button type="button" class="tab-btn active" data-status="all">All Assignments</button>
+          <button type="button" class="tab-btn" data-status="pending">Pending</button>
+          <button type="button" class="tab-btn" data-status="submitted">Submitted</button>
+        </div>
+      </div>
+
+      <div id="assignments-list" style="display: flex; flex-direction: column; gap: 14px;"></div>
+    </section>
+
+    <!-- TAB 4: EXAMS SCHEDULE -->
+    <section id="tab-exams" class="tab-pane" style="display: none;">
+      <div class="feature-card" style="padding: 24px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+          <div>
+            <h3 style="font-size: 1.25rem;">Spring 2026 Mid-Semester Official Seating</h3>
+            <span style="font-size: 0.85rem; color: var(--text-secondary);">Reporting time: 09:30 AM (Strictly 30 mins before bell)</span>
+          </div>
+          <span class="badge badge-rose">Hall Ticket Required</span>
+        </div>
+
+        <div class="table-container">
+          <table class="cyber-table">
+            <thead>
+              <tr>
+                <th>Subject & Course Code</th>
+                <th>Date</th>
+                <th>Time Window</th>
+                <th>Exam Hall</th>
+                <th>Designated Seat</th>
+              </tr>
+            </thead>
+            <tbody id="exams-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Admin Modal: Upload Material / Create Assignment -->
+  <div class="modal-backdrop-custom" id="academics-modal">
+    <div class="modal-container-custom" id="academics-modal-box"></div>
+  </div>
+
+  <!-- Preview PDF Reader Modal -->
+  <div class="modal-backdrop-custom" id="pdf-preview-modal">
+    <div class="modal-container-custom" style="max-width: 720px;">
+      <div class="modal-header-custom">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <i data-lucide="file-text" style="width: 20px; height: 20px; color: var(--cyan-primary);"></i>
+          <h3 id="pdf-modal-title" style="font-size: 1.05rem;">Resource Viewer</h3>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" id="close-pdf-modal">✕</button>
+      </div>
+      <div class="modal-body-custom" style="text-align: center; padding: 36px 24px;">
+        <div style="width: 64px; height: 64px; border-radius: 16px; background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.3); margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; color: var(--cyan-primary);">
+          <i data-lucide="download-cloud" style="width: 32px; height: 32px;"></i>
+        </div>
+        <h3 id="pdf-resource-name" style="margin-bottom: 8px;">Resource File Loaded</h3>
+        <p style="color: var(--text-secondary); font-size: 0.88rem; max-width: 480px; margin: 0 auto 24px;">
+          This official verified institute document is cryptographically signed and stored in Campus 360 cloud storage.
+        </p>
+        <button type="button" class="btn btn-primary" id="pdf-download-trigger">
+          <i data-lucide="file-check" style="width: 16px; height: 16px;"></i>
+          Simulate Download (Offline Copy)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../js/db.js"></script>
+  <script src="../js/page-shell.js"></script>
+
+  <script>
+    let activeDay = 'Monday';
+    let materialFilter = 'all';
+    let materialSearchQuery = '';
+    let assignmentFilter = 'all';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initSubnav();
+      renderTimetable();
+      renderMaterials();
+      renderAssignments();
+      renderExams();
+      renderAdminActions();
+
+      // Check URL query action
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('action') === 'new' && window.CampusDB.isAdmin()) {
+        openUploadMaterialModal();
+      }
+
+      window.addEventListener('campus:db-change', () => {
+        renderMaterials();
+        renderAssignments();
+        renderAdminActions();
+      });
+    });
+
+    function initSubnav() {
+      const tabs = document.querySelectorAll('.subnav-link');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+
+          const target = tab.dataset.tab;
+          document.querySelectorAll('.tab-pane').forEach(p => p.style.display = 'none');
+          const activePane = document.getElementById(`tab-${target}`);
+          if (activePane) activePane.style.display = 'block';
+
+          window.refreshLucideIcons();
+        });
+      });
+
+      // Day buttons
+      const dayBtns = document.querySelectorAll('.day-pill-btn');
+      dayBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          dayBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeDay = btn.dataset.day;
+          renderTimetable();
+        });
+      });
+
+      // Material subject tabs
+      const matTabs = document.querySelectorAll('#material-subject-tabs .tab-btn');
+      matTabs.forEach(b => {
+        b.addEventListener('click', () => {
+          matTabs.forEach(t => t.classList.remove('active'));
+          b.classList.add('active');
+          materialFilter = b.dataset.filter;
+          renderMaterials();
+        });
+      });
+
+      const matSearch = document.getElementById('material-search');
+      if (matSearch) {
+        matSearch.addEventListener('input', (e) => {
+          materialSearchQuery = e.target.value;
+          renderMaterials();
+        });
+      }
+
+      // Assignment status tabs
+      const asgTabs = document.querySelectorAll('#assignment-status-tabs .tab-btn');
+      asgTabs.forEach(b => {
+        b.addEventListener('click', () => {
+          asgTabs.forEach(t => t.classList.remove('active'));
+          b.classList.add('active');
+          assignmentFilter = b.dataset.status;
+          renderAssignments();
+        });
+      });
+
+      // PDF Preview Modal Close
+      const closePdf = document.getElementById('close-pdf-modal');
+      const pdfModal = document.getElementById('pdf-preview-modal');
+      if (closePdf && pdfModal) {
+        closePdf.addEventListener('click', () => pdfModal.classList.remove('active'));
+        pdfModal.addEventListener('click', (e) => {
+          if (e.target === pdfModal) pdfModal.classList.remove('active');
+        });
+      }
+      const dlBtn = document.getElementById('pdf-download-trigger');
+      if (dlBtn) {
+        dlBtn.addEventListener('click', () => {
+          window.showToast('File download completed to local downloads', 'success');
+          pdfModal.classList.remove('active');
+        });
+      }
+    }
+
+    function renderTimetable() {
+      const container = document.getElementById('timetable-periods-list');
+      if (!container) return;
+
+      const periods = window.CampusDB.getTimetable(activeDay);
+      if (periods.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 48px; background: var(--bg-surface); border-radius: 12px; color: var(--text-muted);">
+            <i data-lucide="coffee" style="width: 36px; height: 36px; margin-bottom: 12px; opacity: 0.5;"></i>
+            <p>No lectures scheduled for ${activeDay}. Have a restful weekend!</p>
+          </div>
+        `;
+        window.refreshLucideIcons();
+        return;
+      }
+
+      container.innerHTML = periods.map(p => `
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding: 18px 22px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); transition: all 0.2s ease;">
+          <div style="display: flex; align-items: center; gap: 18px;">
+            <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.2); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 0.95rem; font-weight: 800; color: var(--cyan-primary);">
+              #${p.period}
+            </div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                <span class="badge ${p.type === 'Lab' ? 'badge-violet' : p.type === 'Project' ? 'badge-amber' : 'badge-cyan'}">${p.type}</span>
+                <span style="font-size: 0.78rem; font-family: var(--font-mono); color: var(--text-muted);">${p.code}</span>
+              </div>
+              <h3 style="font-size: 1.05rem; margin-bottom: 2px;">${p.subject}</h3>
+              <span style="font-size: 0.82rem; color: var(--text-secondary);">${p.faculty} • Room / Hall: <strong>${p.room}</strong></span>
+            </div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-family: var(--font-mono); font-size: 0.95rem; font-weight: 600; color: var(--cyan-primary);">${p.time}</div>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Attendance Verified</span>
+          </div>
+        </div>
+      `).join('');
+
+      window.refreshLucideIcons();
+    }
+
+    function renderMaterials() {
+      const container = document.getElementById('materials-grid');
+      if (!container) return;
+
+      const materials = window.CampusDB.getStudyMaterials(materialFilter, materialSearchQuery);
+      const isAdmin = window.CampusDB.isAdmin();
+
+      if (materials.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 48px; background: var(--bg-surface); border-radius: 12px; color: var(--text-muted);">
+            <i data-lucide="file-x" style="width: 36px; height: 36px; margin-bottom: 12px; opacity: 0.5;"></i>
+            <p>No study materials match your search filter.</p>
+          </div>
+        `;
+        window.refreshLucideIcons();
+        return;
+      }
+
+      container.innerHTML = materials.map(m => `
+        <div class="material-card">
+          <div>
+            <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px;">
+              <div class="file-badge">${m.fileType}</div>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span class="badge badge-cyan">${m.semester}</span>
+                ${isAdmin ? `
+                  <button type="button" class="btn btn-sm btn-danger delete-mat-btn" data-id="${m.id}" style="padding: 2px 6px; font-size: 0.7rem;">Delete</button>
+                ` : ''}
+              </div>
+            </div>
+            <strong style="font-size: 0.78rem; font-family: var(--font-mono); color: var(--text-muted); display: block; margin-bottom: 4px;">${m.code} • ${m.subject}</strong>
+            <h3 style="font-size: 1.05rem; line-height: 1.35; margin-bottom: 8px;">${m.title}</h3>
+            <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 18px;">
+              Uploaded by ${m.uploadedBy} • ${m.date}
+            </p>
+          </div>
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 14px; display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-size: 0.78rem; color: var(--text-muted); font-family: var(--font-mono);">${m.size}</span>
+            <button type="button" class="btn btn-secondary btn-sm preview-mat-btn" data-title="${m.title}">
+              <i data-lucide="eye" style="width: 14px; height: 14px;"></i>
+              <span>Preview & Read</span>
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      // Preview click
+      container.querySelectorAll('.preview-mat-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const title = btn.dataset.title;
+          const modal = document.getElementById('pdf-preview-modal');
+          document.getElementById('pdf-modal-title').textContent = title;
+          document.getElementById('pdf-resource-name').textContent = title;
+          modal.classList.add('active');
+          window.refreshLucideIcons();
+        });
+      });
+
+      // Admin delete
+      container.querySelectorAll('.delete-mat-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (confirm('Delete this study resource?')) {
+            window.CampusDB.deleteStudyMaterial(btn.dataset.id);
+            window.showToast('Material deleted', 'info');
+          }
+        });
+      });
+
+      window.refreshLucideIcons();
+    }
+
+    function renderAssignments() {
+      const container = document.getElementById('assignments-list');
+      if (!container) return;
+
+      const assignments = window.CampusDB.getAssignments(assignmentFilter);
+
+      container.innerHTML = assignments.map(asg => `
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+          <div style="flex: 1; min-width: 260px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+              <span class="badge ${asg.status === 'submitted' ? 'badge-emerald' : 'badge-amber'}">
+                ${asg.status === 'submitted' ? '● Submitted' : '⏳ Pending'}
+              </span>
+              <span style="font-size: 0.78rem; font-family: var(--font-mono); color: var(--text-muted);">${asg.code}</span>
+              <span style="font-size: 0.78rem; color: var(--text-secondary);">${asg.subject}</span>
+            </div>
+            <h3 style="font-size: 1.1rem; margin-bottom: 6px;">${asg.title}</h3>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 8px;">
+              ${asg.instructions}
+            </p>
+            <div style="display: flex; gap: 16px; font-size: 0.78rem; color: var(--text-muted);">
+              <span>Due: <strong style="color: var(--text-primary);">${asg.dueDate}</strong></span>
+              <span>Max Marks: <strong style="color: var(--cyan-primary);">${asg.totalMarks}</strong></span>
+            </div>
+          </div>
+          <div>
+            ${asg.status === 'submitted' ? `
+              <div style="text-align: right;">
+                <span class="badge badge-emerald" style="margin-bottom: 4px;">Score: ${asg.score || 'Awaiting Review'}</span>
+                <span style="display: block; font-size: 0.72rem; color: var(--text-muted);">Submitted on ${asg.submittedDate}</span>
+              </div>
+            ` : `
+              <button type="button" class="btn btn-primary submit-asg-btn" data-id="${asg.id}" data-title="${asg.title}">
+                Submit Assignment →
+              </button>
+            `}
+          </div>
+        </div>
+      `).join('');
+
+      container.querySelectorAll('.submit-asg-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          openSubmissionModal(btn.dataset.id, btn.dataset.title);
+        });
+      });
+
+      window.refreshLucideIcons();
+    }
+
+    function renderExams() {
+      const tbody = document.getElementById('exams-table-body');
+      if (!tbody) return;
+
+      const exams = window.CampusDB.getExamsSchedule();
+      tbody.innerHTML = exams.map(e => `
+        <tr>
+          <td>
+            <strong style="color: var(--text-primary); display: block;">${e.subject}</strong>
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">${e.code}</span>
+          </td>
+          <td style="font-family: var(--font-mono); color: var(--cyan-primary);">${e.date}</td>
+          <td style="color: var(--text-secondary);">${e.time}</td>
+          <td><span class="badge badge-cyan">${e.hall}</span></td>
+          <td style="font-weight: 700; color: #c084fc; font-family: var(--font-mono);">${e.seat}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderAdminActions() {
+      const slot = document.getElementById('admin-actions-slot');
+      if (!slot) return;
+
+      const isAdmin = window.CampusDB.isAdmin();
+      if (!isAdmin) {
+        slot.innerHTML = '';
+        return;
+      }
+
+      slot.innerHTML = `
+        <div style="display: flex; gap: 10px;">
+          <button type="button" class="btn btn-violet btn-sm" id="admin-add-mat-btn">
+            <i data-lucide="file-up" style="width: 14px; height: 14px;"></i>
+            + Add Notes
+          </button>
+          <button type="button" class="btn btn-primary btn-sm" id="admin-add-asg-btn">
+            <i data-lucide="plus-circle" style="width: 14px; height: 14px;"></i>
+            + Add Assignment
+          </button>
+        </div>
+      `;
+
+      document.getElementById('admin-add-mat-btn').addEventListener('click', openUploadMaterialModal);
+      document.getElementById('admin-add-asg-btn').addEventListener('click', openCreateAssignmentModal);
+      window.refreshLucideIcons();
+    }
+
+    function openUploadMaterialModal() {
+      const modal = document.getElementById('academics-modal');
+      const box = document.getElementById('academics-modal-box');
+      if (!modal || !box) return;
+
+      box.innerHTML = `
+        <div class="modal-header-custom">
+          <h3 style="font-size: 1.15rem;">Publish Course Study Material</h3>
+          <button type="button" class="btn btn-secondary btn-sm" id="close-ac-modal">✕</button>
+        </div>
+        <div class="modal-body-custom">
+          <form id="create-material-form">
+            <div class="form-group">
+              <label class="form-label">Material / Notes Title</label>
+              <input type="text" class="form-control" id="mat-title" placeholder="e.g. B-Trees & AVL Trees Master Lecture Notes" required />
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+              <div class="form-group">
+                <label class="form-label">Subject</label>
+                <select class="form-control" id="mat-subject">
+                  <option value="Data Structures & Algorithms">Data Structures & Algorithms</option>
+                  <option value="Operating Systems">Operating Systems</option>
+                  <option value="Database Management Systems">Database Management Systems</option>
+                  <option value="Computer Networks">Computer Networks</option>
+                  <option value="Artificial Intelligence & ML">Artificial Intelligence & ML</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Course Code</label>
+                <input type="text" class="form-control" id="mat-code" value="CS301" required />
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+              <div class="form-group">
+                <label class="form-label">File Type</label>
+                <select class="form-control" id="mat-filetype">
+                  <option value="PDF">PDF Document</option>
+                  <option value="PPTX">PowerPoint Slides</option>
+                  <option value="ZIP">Code Zip Archive</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">File Size</label>
+                <input type="text" class="form-control" id="mat-size" value="3.8 MB" required />
+              </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px;">
+              <button type="button" class="btn btn-secondary" id="cancel-mat-btn">Cancel</button>
+              <button type="submit" class="btn btn-violet">Publish Resource</button>
+            </div>
+          </form>
+        </div>
+      `;
+
+      modal.classList.add('active');
+      const close = () => modal.classList.remove('active');
+      document.getElementById('close-ac-modal').addEventListener('click', close);
+      document.getElementById('cancel-mat-btn').addEventListener('click', close);
+
+      document.getElementById('create-material-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        window.CampusDB.createStudyMaterial({
+          title: document.getElementById('mat-title').value,
+          subject: document.getElementById('mat-subject').value,
+          code: document.getElementById('mat-code').value,
+          fileType: document.getElementById('mat-filetype').value,
+          size: document.getElementById('mat-size').value
+        });
+        close();
+        window.showToast('Study Material published to all students!', 'success');
+      });
+    }
+
+    function openCreateAssignmentModal() {
+      const modal = document.getElementById('academics-modal');
+      const box = document.getElementById('academics-modal-box');
+      if (!modal || !box) return;
+
+      box.innerHTML = `
+        <div class="modal-header-custom">
+          <h3 style="font-size: 1.15rem;">Create New Student Assignment</h3>
+          <button type="button" class="btn btn-secondary btn-sm" id="close-ac-modal">✕</button>
+        </div>
+        <div class="modal-body-custom">
+          <form id="create-assignment-form">
+            <div class="form-group">
+              <label class="form-label">Assignment Title</label>
+              <input type="text" class="form-control" id="asg-title" placeholder="e.g. Assignment 5: Graph Shortest Path Implementation" required />
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+              <div class="form-group">
+                <label class="form-label">Subject</label>
+                <select class="form-control" id="asg-subject">
+                  <option value="Data Structures & Algorithms">Data Structures & Algorithms</option>
+                  <option value="Operating Systems">Operating Systems</option>
+                  <option value="Database Management Systems">Database Management Systems</option>
+                  <option value="Computer Networks">Computer Networks</option>
+                  <option value="Artificial Intelligence & ML">Artificial Intelligence & ML</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Due Date</label>
+                <input type="date" class="form-control" id="asg-duedate" value="2026-03-05" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Instructions & Rubrics</label>
+              <textarea class="form-control" id="asg-instructions" placeholder="Specify code requirements, compiler versions, and documentation format." required></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Max Marks</label>
+              <input type="number" class="form-control" id="asg-marks" value="20" required />
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px;">
+              <button type="button" class="btn btn-secondary" id="cancel-asg-btn">Cancel</button>
+              <button type="submit" class="btn btn-primary">Publish Assignment</button>
+            </div>
+          </form>
+        </div>
+      `;
+
+      modal.classList.add('active');
+      const close = () => modal.classList.remove('active');
+      document.getElementById('close-ac-modal').addEventListener('click', close);
+      document.getElementById('cancel-asg-btn').addEventListener('click', close);
+
+      document.getElementById('create-assignment-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        window.CampusDB.createAssignment({
+          title: document.getElementById('asg-title').value,
+          subject: document.getElementById('asg-subject').value,
+          dueDate: document.getElementById('asg-duedate').value,
+          instructions: document.getElementById('asg-instructions').value,
+          totalMarks: document.getElementById('asg-marks').value
+        });
+        close();
+        window.showToast('Assignment published and added to student dashboards!', 'success');
+      });
+    }
+
+    function openSubmissionModal(assignmentId, title) {
+      const modal = document.getElementById('academics-modal');
+      const box = document.getElementById('academics-modal-box');
+      if (!modal || !box) return;
+
+      box.innerHTML = `
+        <div class="modal-header-custom">
+          <div>
+            <h3 style="font-size: 1.1rem;">Submit Assignment</h3>
+            <span style="font-size: 0.8rem; color: var(--text-secondary);">${title}</span>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" id="close-ac-modal">✕</button>
+        </div>
+        <div class="modal-body-custom">
+          <form id="student-submit-form">
+            <div class="form-group">
+              <label class="form-label">Submission Link (GitHub, Google Drive, Colab)</label>
+              <input type="url" class="form-control" id="sub-url" placeholder="https://github.com/..." required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Notes for Grader</label>
+              <textarea class="form-control" id="sub-notes" placeholder="Notes on solution approach or external libraries used."></textarea>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+              <button type="button" class="btn btn-secondary" id="cancel-sub-btn">Cancel</button>
+              <button type="submit" class="btn btn-primary">Confirm Submission</button>
+            </div>
+          </form>
+        </div>
+      `;
+
+      modal.classList.add('active');
+      const close = () => modal.classList.remove('active');
+      document.getElementById('close-ac-modal').addEventListener('click', close);
+      document.getElementById('cancel-sub-btn').addEventListener('click', close);
+
+      document.getElementById('student-submit-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        window.CampusDB.submitAssignment(assignmentId, {
+          notes: document.getElementById('sub-notes').value
+        });
+        close();
+        window.showToast('Assignment submitted successfully!', 'success');
+      });
+    }
+  </script>
+
+</body>
+</html>

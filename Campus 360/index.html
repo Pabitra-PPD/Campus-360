@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Campus 360 — Centralized Smart College Management Operating System for Students and Administrators." />
+  <title>Campus 360 | Smart College Management Operating System</title>
+  
+  <!-- CSS Design System -->
+  <link rel="stylesheet" href="css/dark-theme.css" />
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body data-page="home">
+
+  <main class="container" style="padding-top: 10px; padding-bottom: 60px;">
+    
+    <!-- Urgent Broadcast Ticker Banner -->
+    <div id="urgent-broadcast-container"></div>
+
+    <!-- Admin Command Bar (Only visible to Admin) -->
+    <div id="admin-command-bar-container"></div>
+
+    <!-- Hero Compact Intro -->
+    <section class="home-hero-compact">
+      <div class="hero-pill-badge">
+        <span class="demo-pulse-dot"></span>
+        <span>Centralized Campus Operating System</span>
+      </div>
+      <h1 class="home-hero-title">Welcome to Campus 360</h1>
+      <p class="home-hero-subtitle">
+        Everything campus in six streamlined hubs. Monitor academic progress, discover verified circulars, join events, unlock tech opportunities, and trade student essentials.
+      </p>
+
+      <!-- Search Bar -->
+      <div style="max-width: 580px; margin: 0 auto 36px;">
+        <div class="search-input-box" style="width: 100%;">
+          <i data-lucide="search" style="width: 18px; height: 18px;"></i>
+          <input type="search" id="home-quick-search" placeholder="Quick find across all 6 hubs (or press Ctrl+K)..." />
+        </div>
+      </div>
+    </section>
+
+    <!-- THE SIX PRIMARY FEATURE CARDS (3x2 GRID) -->
+    <section aria-label="Campus 360 Primary Hubs">
+      <div class="primary-cards-grid">
+        
+        <!-- CARD 1: Smart Dashboard -->
+        <a href="pages/dashboard.html" class="feature-card" id="card-dashboard">
+          <div>
+            <div class="card-top">
+              <div class="card-icon-wrap">
+                <i data-lucide="layout-dashboard" style="width: 26px; height: 26px;"></i>
+              </div>
+              <span class="card-tag">Hub 01</span>
+            </div>
+            <h2 class="card-title">Smart Dashboard</h2>
+            <p class="card-desc">
+              Personalized timetable schedule, live attendance percentage with margin calculator, pending assignments, exam countdowns, and quick actions.
+            </p>
+          </div>
+          <div class="card-footer">
+            <span class="card-stat" id="stat-dashboard">
+              <i data-lucide="clock" style="width: 14px; height: 14px;"></i>
+              <span>4 Classes Today • 84.4% Safe</span>
+            </span>
+            <span class="card-arrow">
+              <span>Enter</span>
+              <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+            </span>
+          </div>
+        </a>
+
+        <!-- CARD 2: Academics Hub -->
+        <a href="pages/academics.html" class="feature-card" id="card-academics">
+          <div>
+            <div class="card-top">
+              <div class="card-icon-wrap violet">
+                <i data-lucide="graduation-cap" style="width: 26px; height: 26px;"></i>
+              </div>
+              <span class="card-tag">Hub 02</span>
+            </div>
+            <h2 class="card-title">Academics Hub</h2>
+            <p class="card-desc">
+              Weekly class timetable, subject-wise lecture notes, downloadable syllabus guides, lab manuals, assignment submission tracker, and exam seating.
+            </p>
+          </div>
+          <div class="card-footer">
+            <span class="card-stat violet" id="stat-academics">
+              <i data-lucide="book-open" style="width: 14px; height: 14px;"></i>
+              <span>4 Study Notes • 4 Assignments</span>
+            </span>
+            <span class="card-arrow">
+              <span>Enter</span>
+              <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+            </span>
+          </div>
+        </a>
+
+        <!-- CARD 3: Campus Noticeboard -->
+        <a href="pages/notices.html" class="feature-card" id="card-notices">
+          <div>
+            <div class="card-top">
+              <div class="card-icon-wrap" style="color: #f43f5e; background: rgba(244, 63, 94, 0.1); border-color: rgba(244, 63, 94, 0.25);">
+                <i data-lucide="bell" style="width: 26px; height: 26px;"></i>
+              </div>
+              <span class="card-tag">Hub 03</span>
+            </div>
+            <h2 class="card-title">Campus Noticeboard</h2>
+            <p class="card-desc">
+              Verified administrative circulars, urgent examination schedules, department updates, holiday announcements, and placement bulletins.
+            </p>
+          </div>
+          <div class="card-footer">
+            <span class="card-stat" style="color: #fda4af;" id="stat-notices">
+              <i data-lucide="alert-circle" style="width: 14px; height: 14px;"></i>
+              <span>2 Urgent Circulars • Dean Verified</span>
+            </span>
+            <span class="card-arrow">
+              <span>Enter</span>
+              <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+            </span>
+          </div>
+        </a>
+
+        <!-- CARD 4: Campus Life -->
+        <a href="pages/campus-life.html" class="feature-card" id="card-campus-life">
+          <div>
+            <div class="card-top">
+              <div class="card-icon-wrap" style="color: #38bdf8; background: rgba(56, 189, 248, 0.1); border-color: rgba(56, 189, 248, 0.25);">
+                <i data-lucide="sparkles" style="width: 26px; height: 26px;"></i>
+              </div>
+              <span class="card-tag">Hub 04</span>
+            </div>
+            <h2 class="card-title">Campus Life</h2>
+            <p class="card-desc">
+              Annual college fests, 36-hour hackathons, technical workshops, sports tournaments, cultural nights, and instant 1-click digital pass registration.
+            </p>
+          </div>
+          <div class="card-footer">
+            <span class="card-stat" style="color: #38bdf8;" id="stat-campus-life">
+              <i data-lucide="calendar" style="width: 14px; height: 14px;"></i>
+              <span>Technova 2026 Live • 5 Events</span>
+            </span>
+            <span class="card-arrow">
+              <span>Enter</span>
+              <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+            </span>
+          </div>
+        </a>
+
+        <!-- CARD 5: Opportunities Hub -->
+        <a href="pages/opportunities.html" class="feature-card" id="card-opportunities">
+          <div>
+            <div class="card-top">
+              <div class="card-icon-wrap" style="color: #34d399; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.25);">
+                <i data-lucide="briefcase" style="width: 26px; height: 26px;"></i>
+              </div>
+              <span class="card-tag">Hub 05</span>
+            </div>
+            <h2 class="card-title">Opportunities Hub</h2>
+            <p class="card-desc">
+              Curated tech internships, national defense research fellowships, STEM scholarships, hackathon challenges, and free certification exam vouchers.
+            </p>
+          </div>
+          <div class="card-footer">
+            <span class="card-stat" style="color: #34d399;" id="stat-opportunities">
+              <i data-lucide="trending-up" style="width: 14px; height: 14px;"></i>
+              <span>5 Openings • Up to $3,000 Stipend</span>
+            </span>
+            <span class="card-arrow">
+              <span>Enter</span>
+              <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+            </span>
+          </div>
+        </a>
+
+        <!-- CARD 6: Student Marketplace -->
+        <a href="pages/marketplace.html" class="feature-card" id="card-marketplace">
+          <div>
+            <div class="card-top">
+              <div class="card-icon-wrap" style="color: #fbbf24; background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.25);">
+                <i data-lucide="shopping-bag" style="width: 26px; height: 26px;"></i>
+              </div>
+              <span class="card-tag">Hub 06</span>
+            </div>
+            <h2 class="card-title">Student Marketplace</h2>
+            <p class="card-desc">
+              Peer-to-peer student marketplace for verified textbooks, Casio scientific calculators, Arduino starter kits, lab coats, and engineering drafters.
+            </p>
+          </div>
+          <div class="card-footer">
+            <span class="card-stat" style="color: #fbbf24;" id="stat-marketplace">
+              <i data-lucide="tag" style="width: 14px; height: 14px;"></i>
+              <span>6 Active Listings • Safe On-Campus</span>
+            </span>
+            <span class="card-arrow">
+              <span>Enter</span>
+              <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+            </span>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- Student Quick Highlights / Next Class Bar -->
+    <div id="student-quick-banner" style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.25); display: flex; align-items: center; justify-content: center; color: var(--cyan-primary);">
+          <i data-lucide="calendar-check" style="width: 22px; height: 22px;"></i>
+        </div>
+        <div>
+          <span style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--cyan-primary); font-weight: 600;">Next Lecture Scheduled</span>
+          <h3 style="font-size: 1.05rem; margin: 2px 0;">Data Structures & Algorithms (CS301)</h3>
+          <p style="font-size: 0.82rem; color: var(--text-secondary); margin: 0;">09:00 AM - 10:00 AM • Lecture Hall L-201 • Prof. Sharma</p>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <a href="pages/academics.html" class="btn btn-secondary btn-sm">Full Timetable</a>
+        <a href="pages/dashboard.html" class="btn btn-primary btn-sm">Open Dashboard</a>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="cyber-footer">
+    <div class="container">
+      <div class="footer-bottom-flex">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div class="brand-hexagon" style="width: 28px; height: 28px; font-size: 0.9rem;">C</div>
+          <span><strong>Campus 360</strong> — Digital Operating System for Modern Institutions</span>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">
+          <span>Role: <strong id="footer-role-label">Student</strong></span>
+          <span style="margin: 0 8px;">•</span>
+          <a href="login.html" style="color: var(--cyan-primary);">Switch Account</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/db.js"></script>
+  <script src="js/page-shell.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const user = window.CampusDB.getCurrentUser();
+      const isAdmin = window.CampusDB.isAdmin();
+
+      // Footer Role
+      const footerRole = document.getElementById('footer-role-label');
+      if (footerRole) footerRole.textContent = isAdmin ? 'Administrator' : 'Student';
+
+      // 1. Render Urgent Broadcast Banner if there are urgent notices
+      const urgentContainer = document.getElementById('urgent-broadcast-container');
+      const urgentNotices = window.CampusDB.getNotices({ category: 'Urgent' });
+      if (urgentContainer && urgentNotices.length > 0) {
+        const topUrgent = urgentNotices[0];
+        urgentContainer.innerHTML = `
+          <div class="urgent-broadcast-banner">
+            <div class="urgent-broadcast-content">
+              <span class="urgent-badge">
+                <i data-lucide="alert-triangle" style="width: 12px; height: 12px;"></i>
+                URGENT CIRCULAR
+              </span>
+              <span class="urgent-broadcast-text">
+                <strong>${topUrgent.department}:</strong> ${topUrgent.title}
+              </span>
+            </div>
+            <a href="pages/notices.html" class="btn btn-sm btn-danger" style="flex-shrink: 0;">
+              Read Circular →
+            </a>
+          </div>
+        `;
+      }
+
+      // 2. Render Admin Command Bar if Admin is logged in
+      const adminContainer = document.getElementById('admin-command-bar-container');
+      if (adminContainer && isAdmin) {
+        adminContainer.innerHTML = `
+          <div class="admin-command-bar">
+            <div class="admin-command-label">
+              <i data-lucide="shield" style="width: 18px; height: 18px;"></i>
+              <span>Administrator Command Bar: Instant Content Publishing</span>
+            </div>
+            <div class="admin-actions-flex">
+              <a href="pages/notices.html?action=new" class="btn btn-sm btn-violet">
+                <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
+                + Publish Notice
+              </a>
+              <a href="pages/campus-life.html?action=new" class="btn btn-sm btn-primary">
+                <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
+                + Create Event
+              </a>
+              <a href="pages/academics.html?action=new" class="btn btn-sm btn-secondary">
+                <i data-lucide="file-up" style="width: 14px; height: 14px;"></i>
+                + Study Resource
+              </a>
+              <a href="pages/opportunities.html?action=new" class="btn btn-sm btn-secondary">
+                <i data-lucide="briefcase" style="width: 14px; height: 14px;"></i>
+                + Opportunity
+              </a>
+              <a href="pages/dashboard.html" class="btn btn-sm btn-secondary">
+                <i data-lucide="bar-chart-2" style="width: 14px; height: 14px;"></i>
+                Admin Metrics
+              </a>
+            </div>
+          </div>
+        `;
+      }
+
+      // Dynamic Stats Counters
+      const notices = window.CampusDB.getNotices();
+      const events = window.CampusDB.getEvents();
+      const opps = window.CampusDB.getOpportunities();
+      const market = window.CampusDB.getMarketplaceListings();
+
+      const statNotices = document.getElementById('stat-notices');
+      if (statNotices) statNotices.querySelector('span').textContent = `${notices.length} Published Notices • Verified`;
+
+      const statEvents = document.getElementById('stat-campus-life');
+      if (statEvents) statEvents.querySelector('span').textContent = `${events.length} Active Events • Passes Open`;
+
+      const statOpps = document.getElementById('stat-opportunities');
+      if (statOpps) statOpps.querySelector('span').textContent = `${opps.length} Verified Career Openings`;
+
+      const statMarket = document.getElementById('stat-marketplace');
+      if (statMarket) statMarket.querySelector('span').textContent = `${market.length} Items Listed for Exchange`;
+
+      // Quick Search input on home
+      const homeSearch = document.getElementById('home-quick-search');
+      if (homeSearch) {
+        homeSearch.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && homeSearch.value.trim()) {
+            window.location.href = `pages/notices.html?search=${encodeURIComponent(homeSearch.value.trim())}`;
+          }
+        });
+      }
+
+      window.refreshLucideIcons();
+    });
+  </script>
+
+</body>
+</html>

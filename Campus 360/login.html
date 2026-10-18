@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Campus 360 - Smart College Management Operating System Login" />
+  <title>Login | Campus 360 Operating System</title>
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/dark-theme.css" />
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    .login-wrapper {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 20px;
+      position: relative;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 920px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-glow);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(0, 240, 255, 0.1);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .login-hero-side {
+      background: linear-gradient(145deg, #090d18 0%, #111a2f 100%);
+      padding: 44px 36px;
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .login-hero-side::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: radial-gradient(circle at 20% 20%, rgba(0, 240, 255, 0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .login-form-side {
+      padding: 44px 36px;
+      background: var(--bg-surface);
+    }
+
+    .role-select-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .role-option-card {
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-deep);
+      border-radius: var(--radius-md);
+      padding: 16px 14px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .role-option-card:hover {
+      border-color: rgba(0, 240, 255, 0.35);
+      background: var(--bg-surface-elevated);
+    }
+
+    .role-option-card.selected {
+      border-color: var(--cyan-primary);
+      background: rgba(0, 240, 255, 0.08);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+    }
+
+    .role-option-card.selected.admin-card {
+      border-color: var(--violet-primary);
+      background: rgba(168, 85, 247, 0.08);
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.15);
+    }
+
+    .role-avatar-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      margin: 0 auto 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    .role-avatar-circle.student {
+      background: rgba(0, 240, 255, 0.15);
+      color: var(--cyan-primary);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+    }
+
+    .role-avatar-circle.admin {
+      background: rgba(168, 85, 247, 0.15);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+    }
+
+    .demo-credentials-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 0.78rem;
+      margin-top: 18px;
+    }
+
+    @media (max-width: 800px) {
+      .login-container {
+        grid-template-columns: 1fr;
+      }
+      .login-hero-side {
+        padding: 30px 24px;
+      }
+      .login-form-side {
+        padding: 30px 24px;
+      }
+    }
+  </style>
+</head>
+<body data-page="login">
+
+  <div class="login-wrapper">
+    <div class="login-container">
+      
+      <!-- Left Column: Branding & Features -->
+      <div class="login-hero-side">
+        <div>
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 28px;">
+            <div class="brand-hexagon">C</div>
+            <div>
+              <span class="brand-title">CAMPUS 360</span>
+              <span class="brand-badge">OS v2.4</span>
+            </div>
+          </div>
+
+          <h2 style="font-size: 1.85rem; margin-bottom: 12px; line-height: 1.2;">
+            Intelligent College Management Platform
+          </h2>
+          <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6; margin-bottom: 32px;">
+            Centralized role-based access for academic monitoring, official broadcasts, campus fests, verified opportunities, and peer exchange.
+          </p>
+
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(0, 240, 255, 0.1); display: flex; align-items: center; justify-content: center; color: var(--cyan-primary);">
+                <i data-lucide="shield-check" style="width: 18px; height: 18px;"></i>
+              </div>
+              <span style="font-size: 0.85rem; color: var(--text-secondary);">Secure Role-Based Permissions & Storage</span>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(168, 85, 247, 0.1); display: flex; align-items: center; justify-content: center; color: #c084fc;">
+                <i data-lucide="radio" style="width: 18px; height: 18px;"></i>
+              </div>
+              <span style="font-size: 0.85rem; color: var(--text-secondary);">Instant Admin-to-Student Publishing Sync</span>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(16, 185, 129, 0.1); display: flex; align-items: center; justify-content: center; color: #34d399;">
+                <i data-lucide="layers" style="width: 18px; height: 18px;"></i>
+              </div>
+              <span style="font-size: 0.85rem; color: var(--text-secondary);">Six Unified Core Feature Hubs</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="padding-top: 28px; border-top: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Verified Demo Authentication</span>
+          <span class="badge badge-cyan">Demo Mode</span>
+        </div>
+      </div>
+
+      <!-- Right Column: Interactive Role Login -->
+      <div class="login-form-side">
+        <div style="margin-bottom: 24px;">
+          <h2 style="font-size: 1.5rem; margin-bottom: 6px;">Sign In to Portal</h2>
+          <p style="color: var(--text-secondary); font-size: 0.85rem;">Select your role to access your dedicated workspace.</p>
+        </div>
+
+        <!-- Role Select Cards (Student vs Admin) -->
+        <div class="role-select-cards">
+          <div class="role-option-card selected" id="select-student-card" role="button" tabindex="0">
+            <div class="role-avatar-circle student">🎓</div>
+            <strong style="display: block; font-size: 0.95rem; margin-bottom: 4px;">Student</strong>
+            <span style="font-size: 0.72rem; color: var(--text-muted); display: block;">Dashboard, Schedule, Notes & Fests</span>
+          </div>
+
+          <div class="role-option-card admin-card" id="select-admin-card" role="button" tabindex="0">
+            <div class="role-avatar-circle admin">🛡️</div>
+            <strong style="display: block; font-size: 0.95rem; margin-bottom: 4px;">Administrator</strong>
+            <span style="font-size: 0.72rem; color: var(--text-muted); display: block;">Publishing, Controls & Moderation</span>
+          </div>
+        </div>
+
+        <!-- 1-Click Fast Launch Buttons -->
+        <div style="margin-bottom: 20px;">
+          <button type="button" class="btn btn-primary" id="one-click-login-btn" style="width: 100%; padding: 12px; font-size: 0.95rem;">
+            <i data-lucide="zap" style="width: 18px; height: 18px;"></i>
+            <span id="one-click-btn-label">Launch as Student (Alex Turner)</span>
+          </button>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 12px; margin: 18px 0; color: var(--text-muted); font-size: 0.78rem;">
+          <div style="flex: 1; height: 1px; background: var(--border-subtle);"></div>
+          <span>OR SIGN IN WITH CREDENTIALS</span>
+          <div style="flex: 1; height: 1px; background: var(--border-subtle);"></div>
+        </div>
+
+        <!-- Standard Form -->
+        <form id="login-form">
+          <div class="form-group">
+            <label class="form-label" for="login-email">Campus Email</label>
+            <input type="email" id="login-email" class="form-control" value="student@campus360.edu" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="login-password">Password</label>
+            <input type="password" id="login-password" class="form-control" value="student123" required />
+          </div>
+
+          <button type="submit" class="btn btn-secondary" style="width: 100%; margin-top: 8px;">
+            <span>Authorize & Continue</span>
+            <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
+          </button>
+        </form>
+
+        <!-- Demo Credentials Box -->
+        <div class="demo-credentials-box">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <span style="font-weight: 600; color: var(--text-primary);">Demo Credentials:</span>
+            <span style="color: var(--text-muted);">One-click fill below</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 4px; color: var(--text-secondary);">
+            <div>• <strong>Student:</strong> <code>student@campus360.edu</code> / <code>student123</code></div>
+            <div>• <strong>Admin:</strong> <code>admin@campus360.edu</code> / <code>admin123</code></div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/db.js"></script>
+  <script src="js/page-shell.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let currentSelectedRole = 'student';
+
+      const studentCard = document.getElementById('select-student-card');
+      const adminCard = document.getElementById('select-admin-card');
+      const oneClickBtn = document.getElementById('one-click-login-btn');
+      const oneClickLabel = document.getElementById('one-click-btn-label');
+      const emailInput = document.getElementById('login-email');
+      const passwordInput = document.getElementById('login-password');
+      const loginForm = document.getElementById('login-form');
+
+      function updateRoleUI(role) {
+        currentSelectedRole = role;
+        if (role === 'student') {
+          studentCard.classList.add('selected');
+          adminCard.classList.remove('selected');
+          oneClickBtn.className = 'btn btn-primary';
+          oneClickLabel.textContent = 'Launch as Student (Alex Turner)';
+          emailInput.value = 'student@campus360.edu';
+          passwordInput.value = 'student123';
+        } else {
+          adminCard.classList.add('selected');
+          studentCard.classList.remove('selected');
+          oneClickBtn.className = 'btn btn-violet';
+          oneClickLabel.textContent = 'Launch as Admin (Dr. Vikram Malhotra)';
+          emailInput.value = 'admin@campus360.edu';
+          passwordInput.value = 'admin123';
+        }
+      }
+
+      studentCard.addEventListener('click', () => updateRoleUI('student'));
+      adminCard.addEventListener('click', () => updateRoleUI('admin'));
+
+      // Check URL query param for instant auto-login: ?role=student or ?role=admin
+      const urlParams = new URLSearchParams(window.location.search);
+      const autoRole = urlParams.get('role');
+      if (autoRole === 'student' || autoRole === 'admin') {
+        updateRoleUI(autoRole);
+        window.CampusDB.loginAs(autoRole);
+        window.location.href = autoRole === 'admin' ? 'pages/dashboard.html' : 'index.html';
+        return;
+      }
+
+      oneClickBtn.addEventListener('click', () => {
+        window.CampusDB.loginAs(currentSelectedRole);
+        window.showToast(`Logged in successfully as ${currentSelectedRole.toUpperCase()}`, 'success');
+        setTimeout(() => {
+          window.location.href = currentSelectedRole === 'admin' ? 'pages/dashboard.html' : 'index.html';
+        }, 400);
+      });
+
+      loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        const result = window.CampusDB.login(email, password);
+
+        if (result.success) {
+          window.showToast(`Welcome back, ${result.user.name}!`, 'success');
+          setTimeout(() => {
+            window.location.href = result.user.role === 'admin' ? 'pages/dashboard.html' : 'index.html';
+          }, 400);
+        } else {
+          window.showToast(result.message, 'error');
+        }
+      });
+
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    });
+  </script>
+
+</body>
+</html>

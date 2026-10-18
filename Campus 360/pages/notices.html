@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Campus 360 Noticeboard — Official college announcements, urgent circulars, and verified department updates." />
+  <title>Campus Noticeboard | Campus 360</title>
+  
+  <link rel="stylesheet" href="../css/dark-theme.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    .notice-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 22px;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .notice-card:hover {
+      border-color: rgba(0, 240, 255, 0.35);
+      background: var(--bg-surface-elevated);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .notice-card.urgent-border {
+      border-left: 4px solid var(--rose-danger);
+    }
+
+    .official-seal-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      color: var(--cyan-primary);
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      border-radius: 4px;
+      padding: 2px 6px;
+    }
+  </style>
+</head>
+<body data-page="notices">
+
+  <main class="container" style="padding-top: 24px; padding-bottom: 64px;">
+    
+    <!-- Page Header -->
+    <div class="page-header-wrap">
+      <div class="page-header-flex">
+        <div>
+          <span class="badge badge-rose" style="margin-bottom: 8px;">📢 Official Institute Circulars</span>
+          <h1 class="page-title">Campus Noticeboard</h1>
+          <p class="page-subtitle">
+            Authenticated administrative circulars, examination schedules, placement notices, and department directives.
+          </p>
+        </div>
+        <div id="noticeboard-admin-slot"></div>
+      </div>
+    </div>
+
+    <!-- Urgent Spotlight Banner -->
+    <div id="urgent-spotlight-area"></div>
+
+    <!-- Filters & Search Bar -->
+    <div class="filter-action-bar">
+      <div class="tabs-group" id="notice-category-tabs">
+        <button type="button" class="tab-btn active" data-cat="all">All Notices</button>
+        <button type="button" class="tab-btn" data-cat="Urgent">🚨 Urgent</button>
+        <button type="button" class="tab-btn" data-cat="Exam">Examinations</button>
+        <button type="button" class="tab-btn" data-cat="Academic">Academic</button>
+        <button type="button" class="tab-btn" data-cat="Placement">Placements</button>
+        <button type="button" class="tab-btn" data-cat="Event">Campus Life</button>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+        <select class="form-control" id="department-filter" style="width: auto; min-width: 180px; padding: 7px 12px; font-size: 0.82rem;">
+          <option value="all">All Departments</option>
+          <option value="Examination Cell">Examination Cell</option>
+          <option value="Computer Engineering">Computer Engineering</option>
+          <option value="Placement">Training & Placement</option>
+          <option value="Student Affairs">Student Affairs</option>
+          <option value="Administration">Institute Admin</option>
+        </select>
+
+        <div class="search-input-box">
+          <i data-lucide="search" style="width: 16px; height: 16px;"></i>
+          <input type="search" id="notice-search" placeholder="Search notices by keyword..." />
+        </div>
+      </div>
+    </div>
+
+    <!-- Notices Stream -->
+    <div id="notices-stream-container" style="display: flex; flex-direction: column; gap: 16px;"></div>
+
+  </main>
+
+  <!-- Notice Reader Detail Modal -->
+  <div class="modal-backdrop-custom" id="notice-detail-modal">
+    <div class="modal-container-custom" style="max-width: 650px;">
+      <div class="modal-header-custom">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="official-seal-badge">
+            <i data-lucide="shield-check" style="width: 12px; height: 12px;"></i>
+            VERIFIED OFFICIAL
+          </span>
+          <span id="detail-category-badge" class="badge badge-cyan">Circular</span>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" id="close-detail-modal">✕</button>
+      </div>
+      <div class="modal-body-custom">
+        <h2 id="detail-notice-title" style="font-size: 1.35rem; margin-bottom: 12px; line-height: 1.3;">Notice Title</h2>
+        <div style="display: flex; align-items: center; gap: 16px; color: var(--text-muted); font-size: 0.8rem; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border-subtle);">
+          <span id="detail-notice-dept">Department</span>
+          <span>•</span>
+          <span id="detail-notice-author">Author</span>
+          <span>•</span>
+          <span id="detail-notice-date" style="font-family: var(--font-mono);">Date</span>
+        </div>
+        <div id="detail-notice-content" style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.7; white-space: pre-line; margin-bottom: 28px;"></div>
+        <div style="background: var(--bg-deep); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px; display: flex; align-items: center; justify-content: space-between; font-size: 0.78rem;">
+          <span style="color: var(--text-muted);">Issuing Authority: <strong>Office of the Dean, APSIT Campus 360</strong></span>
+          <span style="color: var(--cyan-primary); font-family: var(--font-mono);">Ref: CIR-2026-X99</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Notice Creator / Editor Modal -->
+  <div class="modal-backdrop-custom" id="notice-edit-modal">
+    <div class="modal-container-custom" style="max-width: 640px;">
+      <div class="modal-header-custom">
+        <h3 id="notice-form-modal-title" style="font-size: 1.15rem;">Publish Official Notice</h3>
+        <button type="button" class="btn btn-secondary btn-sm" id="close-edit-modal">✕</button>
+      </div>
+      <div class="modal-body-custom">
+        <form id="notice-crud-form">
+          <input type="hidden" id="edit-notice-id" value="" />
+          <div class="form-group">
+            <label class="form-label">Notice Title</label>
+            <input type="text" class="form-control" id="form-notice-title" placeholder="e.g. Revised Schedule for Mid-Semester Examinations (Spring 2026)" required />
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <select class="form-control" id="form-notice-category">
+                <option value="Academic">Academic</option>
+                <option value="Exam">Examinations</option>
+                <option value="Placement">Placements & Careers</option>
+                <option value="Event">Campus Life & Fests</option>
+                <option value="Administration">General Administration</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Issuing Department</label>
+              <select class="form-control" id="form-notice-dept">
+                <option value="Examination Cell">Examination Cell</option>
+                <option value="Computer Engineering">Computer Engineering</option>
+                <option value="Training & Placement Cell">Training & Placement Cell</option>
+                <option value="Student Affairs">Student Affairs</option>
+                <option value="Institute Administration">Institute Administration</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Notice Content & Details</label>
+            <textarea class="form-control" id="form-notice-content" placeholder="Full announcement text, instructions, and directives..." required></textarea>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-primary); cursor: pointer;">
+              <input type="checkbox" id="form-notice-urgent" style="width: 16px; height: 16px; accent-color: var(--rose-danger);" />
+              <span>Mark as <strong>🚨 URGENT</strong> broadcast</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-primary); cursor: pointer;">
+              <input type="checkbox" id="form-notice-pinned" style="width: 16px; height: 16px; accent-color: var(--cyan-primary);" />
+              <span>Pin to top of board</span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Publishing Status</label>
+            <select class="form-control" id="form-notice-status">
+              <option value="published">Publish Now (Immediate Student Sync & Notifications)</option>
+              <option value="draft">Save as Internal Draft (Visible to Admins Only)</option>
+            </select>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+            <button type="button" class="btn btn-secondary" id="cancel-edit-notice-btn">Cancel</button>
+            <button type="submit" class="btn btn-violet" id="save-notice-submit-btn">Publish to Noticeboard</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../js/db.js"></script>
+  <script src="../js/page-shell.js"></script>
+
+  <script>
+    let activeCategory = 'all';
+    let activeDept = 'all';
+    let searchQuery = '';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Read URL params
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('category')) activeCategory = urlParams.get('category');
+      if (urlParams.get('search')) searchQuery = urlParams.get('search');
+
+      const searchInput = document.getElementById('notice-search');
+      if (searchInput && searchQuery) searchInput.value = searchQuery;
+
+      initFilters();
+      renderAdminButton();
+      renderNotices();
+
+      if (urlParams.get('action') === 'new' && window.CampusDB.isAdmin()) {
+        openNoticeEditor();
+      }
+
+      window.addEventListener('campus:db-change', () => {
+        renderNotices();
+      });
+      window.addEventListener('campus:auth-change', () => {
+        renderAdminButton();
+        renderNotices();
+      });
+    });
+
+    function initFilters() {
+      const catBtns = document.querySelectorAll('#notice-category-tabs .tab-btn');
+      catBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          catBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeCategory = btn.dataset.cat;
+          renderNotices();
+        });
+      });
+
+      const deptSelect = document.getElementById('department-filter');
+      if (deptSelect) {
+        deptSelect.addEventListener('change', (e) => {
+          activeDept = e.target.value;
+          renderNotices();
+        });
+      }
+
+      const searchInput = document.getElementById('notice-search');
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          searchQuery = e.target.value;
+          renderNotices();
+        });
+      }
+
+      // Close Detail Modal
+      const closeDetail = document.getElementById('close-detail-modal');
+      const detailModal = document.getElementById('notice-detail-modal');
+      if (closeDetail && detailModal) {
+        closeDetail.addEventListener('click', () => detailModal.classList.remove('active'));
+        detailModal.addEventListener('click', (e) => {
+          if (e.target === detailModal) detailModal.classList.remove('active');
+        });
+      }
+
+      // Close Edit Modal
+      const closeEdit = document.getElementById('close-edit-modal');
+      const cancelEdit = document.getElementById('cancel-edit-notice-btn');
+      const editModal = document.getElementById('notice-edit-modal');
+      const closeForm = () => editModal.classList.remove('active');
+      if (closeEdit) closeEdit.addEventListener('click', closeForm);
+      if (cancelEdit) cancelEdit.addEventListener('click', closeForm);
+      if (editModal) {
+        editModal.addEventListener('click', (e) => {
+          if (e.target === editModal) closeForm();
+        });
+      }
+
+      // Submit Notice Form
+      const form = document.getElementById('notice-crud-form');
+      if (form) {
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const noticeId = document.getElementById('edit-notice-id').value;
+          const data = {
+            title: document.getElementById('form-notice-title').value,
+            category: document.getElementById('form-notice-category').value,
+            department: document.getElementById('form-notice-dept').value,
+            content: document.getElementById('form-notice-content').value,
+            isUrgent: document.getElementById('form-notice-urgent').checked,
+            pinned: document.getElementById('form-notice-pinned').checked,
+            status: document.getElementById('form-notice-status').value
+          };
+
+          if (noticeId) {
+            window.CampusDB.updateNotice(noticeId, data);
+            window.showToast('Notice updated successfully', 'success');
+          } else {
+            window.CampusDB.createNotice(data);
+            window.showToast('Notice published and broadcasted to students!', 'success');
+          }
+          closeForm();
+        });
+      }
+    }
+
+    function renderAdminButton() {
+      const slot = document.getElementById('noticeboard-admin-slot');
+      if (!slot) return;
+
+      const isAdmin = window.CampusDB.isAdmin();
+      if (!isAdmin) {
+        slot.innerHTML = '';
+        return;
+      }
+
+      slot.innerHTML = `
+        <button type="button" class="btn btn-violet btn-sm" id="publish-notice-btn">
+          <i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i>
+          <span>+ Publish New Notice</span>
+        </button>
+      `;
+
+      document.getElementById('publish-notice-btn').addEventListener('click', () => openNoticeEditor());
+      window.refreshLucideIcons();
+    }
+
+    function renderNotices() {
+      const container = document.getElementById('notices-stream-container');
+      const spotlight = document.getElementById('urgent-spotlight-area');
+      if (!container) return;
+
+      const isAdmin = window.CampusDB.isAdmin();
+      const notices = window.CampusDB.getNotices({
+        category: activeCategory,
+        department: activeDept,
+        search: searchQuery,
+        onlyPublished: !isAdmin
+      });
+
+      // Urgent Spotlight
+      const urgentItems = notices.filter(n => n.isUrgent);
+      if (spotlight && urgentItems.length > 0 && activeCategory === 'all') {
+        const top = urgentItems[0];
+        spotlight.innerHTML = `
+          <div class="urgent-broadcast-banner" style="margin-bottom: 24px;">
+            <div class="urgent-broadcast-content">
+              <span class="urgent-badge">
+                <i data-lucide="alert-triangle" style="width: 12px; height: 12px;"></i>
+                ACTIVE EMERGENCY ALERT
+              </span>
+              <span class="urgent-broadcast-text">
+                <strong>${top.department}:</strong> ${top.title} (${top.timeAgo})
+              </span>
+            </div>
+            <button type="button" class="btn btn-sm btn-danger read-notice-btn" data-id="${top.id}">
+              Read Directive →
+            </button>
+          </div>
+        `;
+      } else if (spotlight) {
+        spotlight.innerHTML = '';
+      }
+
+      if (notices.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 48px; background: var(--bg-surface); border-radius: 12px; color: var(--text-muted);">
+            <i data-lucide="inbox" style="width: 36px; height: 36px; margin-bottom: 12px; opacity: 0.5;"></i>
+            <p>No notices matching your criteria.</p>
+          </div>
+        `;
+        window.refreshLucideIcons();
+        return;
+      }
+
+      container.innerHTML = notices.map(n => `
+        <article class="notice-card ${n.isUrgent ? 'urgent-border' : ''}">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <span class="official-seal-badge">
+                <i data-lucide="shield-check" style="width: 12px; height: 12px;"></i>
+                ${n.department}
+              </span>
+              <span class="badge ${n.isUrgent ? 'badge-rose' : 'badge-cyan'}">${n.category}</span>
+              ${n.pinned ? '<span class="badge badge-amber">📌 Pinned</span>' : ''}
+              ${isAdmin ? `
+                <span class="badge ${n.status === 'published' ? 'badge-emerald' : 'badge-amber'}">
+                  ${n.status === 'published' ? '● Published' : '○ Draft'}
+                </span>
+              ` : ''}
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 0.78rem; color: var(--text-muted); font-family: var(--font-mono);">${n.date} (${n.timeAgo})</span>
+              ${isAdmin ? `
+                <button type="button" class="btn btn-secondary btn-sm edit-notice-btn" data-id="${n.id}" style="padding: 3px 8px; font-size: 0.75rem;">Edit</button>
+                <button type="button" class="btn btn-danger btn-sm delete-notice-btn" data-id="${n.id}" style="padding: 3px 8px; font-size: 0.75rem;">Delete</button>
+              ` : ''}
+            </div>
+          </div>
+
+          <h2 style="font-size: 1.15rem; margin-bottom: 8px; color: var(--text-primary);">${n.title}</h2>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px;">
+            ${n.content.slice(0, 220)}${n.content.length > 220 ? '...' : ''}
+          </p>
+
+          <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border-subtle); padding-top: 12px; font-size: 0.78rem; color: var(--text-muted);">
+            <span>Issued by: <strong style="color: var(--text-secondary);">${n.author}</strong></span>
+            <button type="button" class="link-btn read-notice-btn" data-id="${n.id}" style="color: var(--cyan-primary); font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+              <span>Read Full Circular</span>
+              <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+            </button>
+          </div>
+        </article>
+      `).join('');
+
+      // Attach Click Listeners
+      container.querySelectorAll('.read-notice-btn').forEach(btn => {
+        btn.addEventListener('click', () => openNoticeDetail(btn.dataset.id));
+      });
+
+      if (spotlight) {
+        spotlight.querySelectorAll('.read-notice-btn').forEach(btn => {
+          btn.addEventListener('click', () => openNoticeDetail(btn.dataset.id));
+        });
+      }
+
+      if (isAdmin) {
+        container.querySelectorAll('.edit-notice-btn').forEach(btn => {
+          btn.addEventListener('click', () => openNoticeEditor(btn.dataset.id));
+        });
+        container.querySelectorAll('.delete-notice-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (confirm('Permanently delete this notice from the institute portal?')) {
+              window.CampusDB.deleteNotice(btn.dataset.id);
+              window.showToast('Notice deleted', 'info');
+            }
+          });
+        });
+      }
+
+      window.refreshLucideIcons();
+    }
+
+    function openNoticeDetail(id) {
+      const notice = window.CampusDB.getNoticeById(id);
+      if (!notice) return;
+
+      document.getElementById('detail-notice-title').textContent = notice.title;
+      document.getElementById('detail-notice-dept').textContent = notice.department;
+      document.getElementById('detail-notice-author').textContent = notice.author;
+      document.getElementById('detail-notice-date').textContent = `${notice.date} • ${notice.timeAgo}`;
+      document.getElementById('detail-notice-content').textContent = notice.content;
+      document.getElementById('detail-category-badge').textContent = notice.category;
+
+      const modal = document.getElementById('notice-detail-modal');
+      modal.classList.add('active');
+      window.refreshLucideIcons();
+    }
+
+    function openNoticeEditor(noticeId = null) {
+      const modal = document.getElementById('notice-edit-modal');
+      const title = document.getElementById('notice-form-modal-title');
+      const idField = document.getElementById('edit-notice-id');
+
+      if (noticeId) {
+        const notice = window.CampusDB.getNoticeById(noticeId);
+        if (!notice) return;
+        title.textContent = 'Edit Notice Circular';
+        idField.value = notice.id;
+        document.getElementById('form-notice-title').value = notice.title;
+        document.getElementById('form-notice-category').value = notice.category;
+        document.getElementById('form-notice-dept').value = notice.department;
+        document.getElementById('form-notice-content').value = notice.content;
+        document.getElementById('form-notice-urgent').checked = notice.isUrgent;
+        document.getElementById('form-notice-pinned').checked = Boolean(notice.pinned);
+        document.getElementById('form-notice-status').value = notice.status;
+        document.getElementById('save-notice-submit-btn').textContent = 'Update Notice';
+      } else {
+        title.textContent = 'Publish Official Notice';
+        idField.value = '';
+        document.getElementById('form-notice-title').value = '';
+        document.getElementById('form-notice-content').value = '';
+        document.getElementById('form-notice-urgent').checked = false;
+        document.getElementById('form-notice-pinned').checked = false;
+        document.getElementById('form-notice-status').value = 'published';
+        document.getElementById('save-notice-submit-btn').textContent = 'Publish to Noticeboard';
+      }
+
+      modal.classList.add('active');
+    }
+  </script>
+
+</body>
+</html>

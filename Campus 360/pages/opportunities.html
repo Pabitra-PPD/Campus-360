@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Campus 360 Opportunities Hub — Curated tech internships, STEM scholarships, hackathon competitions, and certification vouchers." />
+  <title>Opportunities Hub | Campus 360</title>
+  
+  <link rel="stylesheet" href="../css/dark-theme.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    .opp-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.25s ease;
+    }
+
+    .opp-card:hover {
+      border-color: rgba(16, 185, 129, 0.35);
+      background: var(--bg-surface-elevated);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+    }
+  </style>
+</head>
+<body data-page="opportunities">
+
+  <main class="container" style="padding-top: 24px; padding-bottom: 64px;">
+    
+    <!-- Page Header -->
+    <div class="page-header-wrap">
+      <div class="page-header-flex">
+        <div>
+          <span class="badge badge-emerald" style="margin-bottom: 8px;">💼 Verified Career & Grants Network</span>
+          <h1 class="page-title">Opportunities Hub</h1>
+          <p class="page-subtitle">
+            Curated software engineering internships, national research fellowships, government STEM grants, and certification waivers.
+          </p>
+        </div>
+        <div id="opp-admin-actions-slot"></div>
+      </div>
+    </div>
+
+    <!-- Filters & Search -->
+    <div class="filter-action-bar">
+      <div class="tabs-group" id="opp-type-tabs">
+        <button type="button" class="tab-btn active" data-type="all">All Opportunities</button>
+        <button type="button" class="tab-btn" data-type="Internship">Internships</button>
+        <button type="button" class="tab-btn" data-type="Scholarship">Scholarships</button>
+        <button type="button" class="tab-btn" data-type="Competition">Competitions</button>
+        <button type="button" class="tab-btn" data-type="Certification">Certifications</button>
+        <button type="button" class="tab-btn" data-type="saved" style="color: #fbbf24;">⭐ Bookmarked</button>
+      </div>
+
+      <div class="search-input-box">
+        <i data-lucide="search" style="width: 16px; height: 16px;"></i>
+        <input type="search" id="opp-search-input" placeholder="Search by role, company, or tech..." />
+      </div>
+    </div>
+
+    <!-- Opportunities Stream -->
+    <div id="opps-grid-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 24px;"></div>
+
+  </main>
+
+  <!-- Application Submission Modal -->
+  <div class="modal-backdrop-custom" id="apply-modal">
+    <div class="modal-container-custom" style="max-width: 520px;">
+      <div class="modal-header-custom">
+        <div>
+          <h3 style="font-size: 1.15rem;">Fast Apply with Campus 360 Profile</h3>
+          <span id="modal-opp-target-title" style="font-size: 0.8rem; color: var(--text-secondary);">Opportunity Name</span>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" id="close-apply-modal">✕</button>
+      </div>
+      <div class="modal-body-custom">
+        <form id="apply-form">
+          <input type="hidden" id="apply-opp-id" value="" />
+          <div style="background: var(--bg-deep); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 18px; font-size: 0.82rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span style="color: var(--text-muted);">Applicant Name:</span>
+              <strong id="applicant-name" style="color: var(--text-primary);">Alex Turner</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span style="color: var(--text-muted);">Verified CGPA:</span>
+              <strong style="color: var(--cyan-primary);">8.85 / 10.0 (Dean Verified)</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: var(--text-muted);">Discipline:</span>
+              <span style="color: var(--text-secondary);">B.Tech Computer Science (Sem 6)</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Portfolio / Resume / GitHub Profile Link</label>
+            <input type="url" class="form-control" id="applicant-portfolio" value="https://github.com/alex-turner" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Statement of Purpose / Relevant Experience</label>
+            <textarea class="form-control" id="applicant-notes" placeholder="Explain your background, relevant projects, and motivation for this role..." required>Passionate 3rd-year CS student with hands-on experience in distributed systems, C++, Python, and full-stack engineering.</textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+            <button type="button" class="btn btn-secondary" id="cancel-apply-btn">Cancel</button>
+            <button type="submit" class="btn btn-primary">Transmit Application</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Opportunity Creator / Editor Modal -->
+  <div class="modal-backdrop-custom" id="opp-admin-modal">
+    <div class="modal-container-custom" style="max-width: 620px;">
+      <div class="modal-header-custom">
+        <h3 id="opp-form-modal-title" style="font-size: 1.15rem;">Post Career Opportunity</h3>
+        <button type="button" class="btn btn-secondary btn-sm" id="close-opp-admin-modal">✕</button>
+      </div>
+      <div class="modal-body-custom">
+        <form id="opp-admin-form">
+          <input type="hidden" id="admin-opp-id" value="" />
+          <div class="form-group">
+            <label class="form-label">Position / Opportunity Title</label>
+            <input type="text" class="form-control" id="form-opp-title" placeholder="e.g. Google Summer of Code (GSoC) 2026 Mentorship" required />
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label">Opportunity Type</label>
+              <select class="form-control" id="form-opp-type">
+                <option value="Internship">Internship</option>
+                <option value="Scholarship">Scholarship</option>
+                <option value="Competition">Competition / Hackathon</option>
+                <option value="Certification">Exam Voucher / Certification</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Company / Sponsoring Body</label>
+              <input type="text" class="form-control" id="form-opp-company" placeholder="e.g. Google Open Source" required />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label">Stipend / Award Value</label>
+              <input type="text" class="form-control" id="form-opp-stipend" placeholder="e.g. ₹25,000 / mo or $1,500" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Location / Mode</label>
+              <input type="text" class="form-control" id="form-opp-location" value="Remote / On-Campus" required />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label">Application Deadline</label>
+              <input type="date" class="form-control" id="form-opp-deadline" value="2026-03-25" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Eligibility Criteria</label>
+              <input type="text" class="form-control" id="form-opp-eligibility" value="B.Tech 3rd/4th Year with CGPA >= 7.5" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Description & Scope</label>
+            <textarea class="form-control" id="form-opp-desc" placeholder="Details regarding responsibilities, deliverables, and benefits..." required></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px;">
+            <button type="button" class="btn btn-secondary" id="cancel-opp-admin-btn">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="save-opp-submit-btn">Publish to Students</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../js/db.js"></script>
+  <script src="../js/page-shell.js"></script>
+
+  <script>
+    let activeType = 'all';
+    let searchQuery = '';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initFilters();
+      renderAdminButton();
+      renderOpportunities();
+
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('action') === 'new' && window.CampusDB.isAdmin()) {
+        openOppEditor();
+      }
+
+      window.addEventListener('campus:db-change', () => {
+        renderOpportunities();
+      });
+      window.addEventListener('campus:auth-change', () => {
+        renderAdminButton();
+        renderOpportunities();
+      });
+    });
+
+    function initFilters() {
+      const typeBtns = document.querySelectorAll('#opp-type-tabs .tab-btn');
+      typeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          typeBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeType = btn.dataset.type;
+          renderOpportunities();
+        });
+      });
+
+      const searchInput = document.getElementById('opp-search-input');
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          searchQuery = e.target.value;
+          renderOpportunities();
+        });
+      }
+
+      // Apply Modal Close
+      const closeApply = document.getElementById('close-apply-modal');
+      const cancelApply = document.getElementById('cancel-apply-btn');
+      const applyModal = document.getElementById('apply-modal');
+      const closeApplyFn = () => applyModal.classList.remove('active');
+      if (closeApply) closeApply.addEventListener('click', closeApplyFn);
+      if (cancelApply) cancelApply.addEventListener('click', closeApplyFn);
+      if (applyModal) {
+        applyModal.addEventListener('click', (e) => {
+          if (e.target === applyModal) closeApplyFn();
+        });
+      }
+
+      // Submit Apply Form
+      const applyForm = document.getElementById('apply-form');
+      if (applyForm) {
+        applyForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const oppId = document.getElementById('apply-opp-id').value;
+          const notes = document.getElementById('applicant-notes').value;
+          window.CampusDB.applyOpportunity(oppId, notes);
+          closeApplyFn();
+          window.showToast('Application submitted successfully!', 'success');
+        });
+      }
+
+      // Admin Modal Close
+      const closeAdmin = document.getElementById('close-opp-admin-modal');
+      const cancelAdmin = document.getElementById('cancel-opp-admin-btn');
+      const adminModal = document.getElementById('opp-admin-modal');
+      const closeAdminFn = () => adminModal.classList.remove('active');
+      if (closeAdmin) closeAdmin.addEventListener('click', closeAdminFn);
+      if (cancelAdmin) cancelAdmin.addEventListener('click', closeAdminFn);
+      if (adminModal) {
+        adminModal.addEventListener('click', (e) => {
+          if (e.target === adminModal) closeAdminFn();
+        });
+      }
+
+      // Submit Admin Opp Form
+      const adminForm = document.getElementById('opp-admin-form');
+      if (adminForm) {
+        adminForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const oppId = document.getElementById('admin-opp-id').value;
+          const data = {
+            title: document.getElementById('form-opp-title').value,
+            type: document.getElementById('form-opp-type').value,
+            company: document.getElementById('form-opp-company').value,
+            stipend: document.getElementById('form-opp-stipend').value,
+            location: document.getElementById('form-opp-location').value,
+            deadline: document.getElementById('form-opp-deadline').value,
+            eligibility: document.getElementById('form-opp-eligibility').value,
+            description: document.getElementById('form-opp-desc').value
+          };
+
+          if (oppId) {
+            window.CampusDB.updateOpportunity(oppId, data);
+            window.showToast('Opportunity updated', 'success');
+          } else {
+            window.CampusDB.createOpportunity(data);
+            window.showToast('Opportunity published and notified to students!', 'success');
+          }
+          closeAdminFn();
+        });
+      }
+    }
+
+    function renderAdminButton() {
+      const slot = document.getElementById('opp-admin-actions-slot');
+      if (!slot) return;
+
+      const isAdmin = window.CampusDB.isAdmin();
+      if (!isAdmin) {
+        slot.innerHTML = '';
+        return;
+      }
+
+      slot.innerHTML = `
+        <button type="button" class="btn btn-emerald btn-sm" id="post-opp-admin-btn" style="background: var(--emerald-safe); color: #06080d;">
+          <i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i>
+          <span>+ Post Opportunity</span>
+        </button>
+      `;
+
+      document.getElementById('post-opp-admin-btn').addEventListener('click', () => openOppEditor());
+      window.refreshLucideIcons();
+    }
+
+    function renderOpportunities() {
+      const container = document.getElementById('opps-grid-container');
+      if (!container) return;
+
+      const user = window.CampusDB.getCurrentUser();
+      const isAdmin = window.CampusDB.isAdmin();
+      const savedOnly = activeType === 'saved';
+
+      const opps = window.CampusDB.getOpportunities({
+        type: savedOnly ? 'all' : activeType,
+        search: searchQuery,
+        savedOnly: savedOnly,
+        onlyPublished: !isAdmin
+      });
+
+      if (opps.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 48px; background: var(--bg-surface); border-radius: 12px; color: var(--text-muted);">
+            <i data-lucide="inbox" style="width: 36px; height: 36px; margin-bottom: 12px; opacity: 0.5;"></i>
+            <p>${savedOnly ? 'You have no saved opportunities. Star openings you want to track!' : 'No opportunities matching your query.'}</p>
+          </div>
+        `;
+        window.refreshLucideIcons();
+        return;
+      }
+
+      container.innerHTML = opps.map(opp => {
+        const isSaved = user && (opp.savedBy || []).includes(user.id);
+        const isApplied = user && (opp.appliedBy || []).includes(user.id);
+
+        return `
+          <div class="opp-card">
+            <div>
+              <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px;">
+                <span class="badge ${opp.type === 'Internship' ? 'badge-cyan' : opp.type === 'Scholarship' ? 'badge-amber' : 'badge-violet'}">
+                  ${opp.type}
+                </span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <button type="button" class="bookmark-btn" data-id="${opp.id}" style="color: ${isSaved ? '#fbbf24' : 'var(--text-muted)'}; padding: 4px;" title="Bookmark">
+                    <i data-lucide="${isSaved ? 'star' : 'bookmark'}" style="width: 18px; height: 18px; fill: ${isSaved ? '#fbbf24' : 'none'};"></i>
+                  </button>
+                  ${isAdmin ? `
+                    <button type="button" class="btn btn-sm btn-secondary edit-opp-btn" data-id="${opp.id}" style="padding: 2px 6px; font-size: 0.7rem;">Edit</button>
+                    <button type="button" class="btn btn-sm btn-danger delete-opp-btn" data-id="${opp.id}" style="padding: 2px 6px; font-size: 0.7rem;">Delete</button>
+                  ` : ''}
+                </div>
+              </div>
+
+              <h2 style="font-size: 1.15rem; line-height: 1.35; margin-bottom: 4px; color: var(--text-primary);">${opp.title}</h2>
+              <strong style="font-size: 0.85rem; color: var(--cyan-primary); display: block; margin-bottom: 12px;">${opp.company} • ${opp.location}</strong>
+
+              <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.55; margin-bottom: 16px;">
+                ${opp.description}
+              </p>
+
+              <div style="background: var(--bg-deep); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 10px 12px; margin-bottom: 18px; font-size: 0.78rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                  <span style="color: var(--text-muted);">Reward / Stipend:</span>
+                  <strong style="color: #34d399; font-family: var(--font-mono);">${opp.stipend}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                  <span style="color: var(--text-muted);">Deadline:</span>
+                  <strong style="color: var(--text-primary); font-family: var(--font-mono);">${opp.deadline}</strong>
+                </div>
+                <div style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 4px; border-top: 1px solid var(--border-subtle); padding-top: 4px;">
+                  Eligibility: ${opp.eligibility}
+                </div>
+              </div>
+            </div>
+
+            <div style="border-top: 1px solid var(--border-subtle); padding-top: 14px; display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-size: 0.75rem; color: var(--text-muted);">Status: ${isApplied ? '<strong style="color: #34d399;">Applied ✅</strong>' : 'Accepting Applications'}</span>
+              ${isApplied ? `
+                <button type="button" class="btn btn-secondary btn-sm" disabled style="opacity: 0.8;">
+                  Application Sent
+                </button>
+              ` : `
+                <button type="button" class="btn btn-primary btn-sm apply-opp-btn" data-id="${opp.id}" data-title="${opp.title}">
+                  Fast Apply →
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Bookmark action
+      container.querySelectorAll('.bookmark-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.id;
+          const isNowSaved = window.CampusDB.toggleSaveOpportunity(id);
+          window.showToast(isNowSaved ? 'Saved to bookmarks' : 'Removed from bookmarks', 'info');
+        });
+      });
+
+      // Apply action
+      container.querySelectorAll('.apply-opp-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.id;
+          const title = btn.dataset.title;
+          openApplyModal(id, title);
+        });
+      });
+
+      if (isAdmin) {
+        container.querySelectorAll('.edit-opp-btn').forEach(btn => {
+          btn.addEventListener('click', () => openOppEditor(btn.dataset.id));
+        });
+        container.querySelectorAll('.delete-opp-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (confirm('Delete this opportunity listing?')) {
+              window.CampusDB.deleteOpportunity(btn.dataset.id);
+              window.showToast('Opportunity deleted', 'info');
+            }
+          });
+        });
+      }
+
+      window.refreshLucideIcons();
+    }
+
+    function openApplyModal(id, title) {
+      document.getElementById('apply-opp-id').value = id;
+      document.getElementById('modal-opp-target-title').textContent = title;
+      const user = window.CampusDB.getCurrentUser();
+      if (user) {
+        document.getElementById('applicant-name').textContent = user.name;
+      }
+      document.getElementById('apply-modal').classList.add('active');
+    }
+
+    function openOppEditor(oppId = null) {
+      const modal = document.getElementById('opp-admin-modal');
+      const title = document.getElementById('opp-form-modal-title');
+      const idField = document.getElementById('admin-opp-id');
+
+      if (oppId) {
+        const opp = (window.CampusDB.getOpportunities({ onlyPublished: false })).find(o => o.id === oppId);
+        if (!opp) return;
+        title.textContent = 'Edit Opportunity';
+        idField.value = opp.id;
+        document.getElementById('form-opp-title').value = opp.title;
+        document.getElementById('form-opp-type').value = opp.type;
+        document.getElementById('form-opp-company').value = opp.company;
+        document.getElementById('form-opp-stipend').value = opp.stipend;
+        document.getElementById('form-opp-location').value = opp.location;
+        document.getElementById('form-opp-deadline').value = opp.deadline;
+        document.getElementById('form-opp-eligibility').value = opp.eligibility;
+        document.getElementById('form-opp-desc').value = opp.description;
+        document.getElementById('save-opp-submit-btn').textContent = 'Update Listing';
+      } else {
+        title.textContent = 'Post Career Opportunity';
+        idField.value = '';
+        document.getElementById('form-opp-title').value = '';
+        document.getElementById('form-opp-company').value = '';
+        document.getElementById('form-opp-desc').value = '';
+        document.getElementById('save-opp-submit-btn').textContent = 'Publish to Students';
+      }
+
+      modal.classList.add('active');
+    }
+  </script>
+
+</body>
+</html>
